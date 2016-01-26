@@ -1,0 +1,12 @@
+replace findLines with CV2 rtn
+10:02 AM 2015-08-08 replace sworks cropx with squares 
+                     blend simplecv Image with cv2 mat 
+      
+port simpleCV to open CV
+    - start with weight
+    - CV tutorial in iPython
+    - to run ipython cd to github/gdoor then cmd line ipython
+     letter_recog.py  may be useful
+     find squares in simplecv 1.3 looks very good
+10:02 AM 2015-08-08   sworks converted to use squares on cropx
+10:21 PM 2016-01-24   sworks looks OK
