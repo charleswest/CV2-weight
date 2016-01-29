@@ -7,7 +7,7 @@ from sworks import Cropx, Part
 from rnum import iHunt, db, hunt   
 
 class Scale:
-    global db,Gd ,tmpf 
+    global db,tmpf 
     name = 'Scale'
     def __init__(self,fname):
         global tmpf
@@ -36,7 +36,7 @@ if  __name__ == '__main__':
     filename = "input.png"
     print 'weight.py', filename
     
-    db = True
+    db = False
     
         
     s = Scale(filename)

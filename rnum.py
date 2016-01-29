@@ -1,10 +1,11 @@
 
 #from SimpleCV import Image, Color, Display
+from findBlobs import findBlobs
 from cwUtils import *
 import numpy as np
 import cv2
 import sys
-global db,Gd
+global db 
 Rtype = 'h2o'
 #Gd  = Display((1040,410)) 
 iHunt = []
@@ -13,65 +14,6 @@ d = {}                      # global dictionary of n : xy values
 xtyp = ''
 
 
-def hunt2(imgx,typ,hcnt):
-#    imgy = imgx.adaptiveScale((1040,410))
-    imgy = cv2.resize(imgx, (1040,410))
-    img = imgy
-    img.save(Gd)
-    if db: cpause('hunt 2',Gd)
-    xtyp = typ
-    typex = {
-     #    lim   limh    ms    mx    dz   
- 'wt' : [130.0,150.0,  200,  4000,  60],    
- 'h2o': [ 60.0, 80.0,  150,  4000,  60],
- 'fat': [  9.0, 15.0,  100,  2000,  50]     # 400    
-            }
-    exlist = {
-            'wt' :  [12, 14,     ],
-            'h2o' : [2,  8, 12  ],
-            'fat' : [12,  10   ]
-              }                             #  200 5 600  3000   works h20
-    txlist = {
-            'wt' :  [ 160, 140   ],
-            'h2o' : [ 130, 160, 140   ],  #160, 140, 205 ],
-            'fat' : [ 187, 160, 205, 140   ]
-             }
-    lim  =  typex[typ][0]    #limt[0]
-    limh =  typex[typ][1]
-    ms =    typex[typ][2]
-    mx =    typex[typ][3]
-    dz =    typex[typ][4]
-   
-    img.save(Gd)
-    for iex in exlist[typ]:
-        if db: print '-----rdNumber    ms', ms, ' mx',  mx, img.area()
-        for tx in txlist[typ]:
-            hcnt = hcnt + 1
-            img = imgy.binarize(tx).invert()
-            img = img.erode(iex)
-            img.save(Gd)
-            if db: cpause( ['Erode image',iex],Gd)
-            # n is the pattern, rmx the max size, rms min size
-            n,rmx,rms = rdNumber(img,ex=iex, ms=ms   ,dz=dz , mx = mx ,tval=-1 )
-          
-            if db: print '       Hunt 1 n ', hcnt,  n     #  exit here
-            nn = 0; j = -1
-            n.reverse()
-            #nn = 100 * n[1] + 10 * n[2] + n[3] + n[4]/10.0
-            if db :
-                print 'n' ,n
-                cpause(['nreverse',n],Gd)
-            for j, xin in  enumerate(n):
-                nn = nn + xin * 10**(j-1)
-            if (nn > lim) and nn < limh:
-                iHunt.append((typ, hcnt, iex, tx, ms,rms, mx,rmx,  nn ))
-                print 'hunt rtn' ,nn
-                return(nn)
-            
-                
-             
-    print '>>>>><<<<<<<<<>>>>hunt2 ' ,typ, ' failed'
-    return(0)
 def hunt(imgx,typ ):
     global Gd, db ,xtyp
     
@@ -84,19 +26,19 @@ def hunt(imgx,typ ):
     xtyp = typ
     typex = {
                  #    lim   limh    ms     mx   dz   
-             'wt' : [130.0,150.0,  500,  2100,  60],    
-             'h2o': [ 60.0, 80.0,  600,  3600,  60],
-             'fat': [  9.0, 15.0,  450,  3600,  50]       
+             'wt' : [130.0,150.0,  500,  3500,   60],    
+             'h2o': [ 60.0, 80.0,  1000,  10000,  80],
+             'fat': [  9.0, 15.0,  1000,  8000,   100]       
             }
    
     exlist = {
             'wt' :  [8,  2  ],
-            'h2o' : [5,  3  ],
+            'h2o' : [5   ],
             'fat' : [2,  8  ]
               }                             #  200 5 600  3000   works h20
     txlist = {
             'wt' :  [ 160, 140   ],
-            'h2o' : [ 140, 200   ],  #160, 140, 205 ],
+            'h2o' : [ 140   ],  #160, 140, 205 ],
             'fat' : [ 160  ,140 ]
              }
     lim  =  typex[typ][0]    #limt[0]
@@ -125,7 +67,7 @@ def hunt(imgx,typ ):
             #nn = 100 * n[1] + 10 * n[2] + n[3] + n[4]/10.0
             if db :
                 print 'n' ,n
-                cpause(['nreverse',n],Gd)
+                #cpause(['nreverse',n],Gd)
             for j, xin in  enumerate(n):
                 nn = nn + xin * 10**(j-1)
             if (nn > lim) and nn < limh:
@@ -136,8 +78,66 @@ def hunt(imgx,typ ):
                 
              
     print '>>>>>>>>>>>>>>>>>hunt  ' ,typ, 'failed'
+    return (0)                          #  eliminate hunt2 for now
+    return(hunt2(imgx,typ,hcnt))
+def hunt2(imgx,typ,hcnt):
+#    imgy = imgx.adaptiveScale((1040,410))
+    imgy = cv2.resize(imgx, (1040,410))
+    img = imgy
+    if db: cvs(img,'hunt 2',0)
     
-    return(hunt2(imgx,typ,hcnt))               
+    xtyp = typ
+    typex = {
+     #    lim   limh    ms    mx    dz   
+ 'wt' : [130.0,150.0,  200,  4000,  60],    
+ 'h2o': [ 60.0, 80.0,  150,  4000,  60],
+ 'fat': [  9.0, 15.0,  100,  2000,  50]     # 400    
+            }
+    exlist = {
+            'wt' :  [12, 14,     ],
+            'h2o' : [2,  8, 12  ],
+            'fat' : [12,  10   ]
+              }                             #  200 5 600  3000   works h20
+    txlist = {
+            'wt' :  [ 160, 140   ],
+            'h2o' : [ 130, 160, 140   ],  #160, 140, 205 ],
+            'fat' : [ 187, 160, 205, 140   ]
+             }
+    lim  =  typex[typ][0]    #limt[0]
+    limh =  typex[typ][1]
+    ms =    typex[typ][2]
+    mx =    typex[typ][3]
+    dz =    typex[typ][4]
+   
+    cvs(img)
+    for iex in exlist[typ]:
+        if db: print '-----rdNumber h2   ms', ms, ' mx',  mx 
+        for tx in txlist[typ]:
+            hcnt = hcnt + 1
+            img = erode(imgy,iex)
+            cvs(img)
+            #if db: cpause( ['Erode image',iex],Gd)
+            # n is the pattern, rmx the max size, rms min size
+            n,rmx,rms = rdNumber(img,ex=iex, ms=ms   ,dz=dz , mx = mx ,tval=tx )
+          
+            if db: print '       Hunt 1 n ', hcnt,  n     #  exit here
+            nn = 0; j = -1
+            n.reverse()
+            #nn = 100 * n[1] + 10 * n[2] + n[3] + n[4]/10.0
+            if db :
+                print 'n' ,n
+                cpause(['nreverse',n],Gd)
+            for j, xin in  enumerate(n):
+                nn = nn + xin * 10**(j-1)
+            if (nn > lim) and nn < limh:
+                iHunt.append((typ, hcnt, iex, tx, ms,rms, mx,rmx,  nn ))
+                print 'hunt rtn' ,nn
+                return(nn)
+            
+                
+             
+    print '>>>>><<<<<<<<<>>>>hunt2 ' ,typ, ' failed'
+    return(0)
 def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
      
     '''
@@ -150,50 +150,64 @@ def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
     
     print '-----rdNumber   tval',tval,' ex',ex,'ms', ms, 'mxsize', mx 
     #  img.clearLayers()
-    cvs(img)   #img.save(Gd)
-    fs = img.findBlobs(threshval=tval,minsize=ms, maxsize= mx  )
-    
+    #cvs(img,'fs input')   #img.save(Gd)
+    fs = findBlobs(img, ms, mx , tval=tval )
     if (fs is  None):
         if db: print ' no features found'
-        img.save(Gd)
+        cvs(img)
         return ([0,0,0,0],0,0)
     else:
-        fs.draw(color=Color.RED,width=5)
-        img.save(Gd)
-        if db: cpause(['rd img fs len is ->',len(fs)],Gd)
-        fs = sorted(fs, key = lambda b: b.x)
-        rmx = fs[0].area()
-        rmn = fs[0].area() 
+#        fs = sorted(fs, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
+        fs = sorted(fs, key = lambda cnt:cv2.contourArea(cnt))
+
+        cv2.drawContours( img, fs, -1, (0, 0, 255), 5 )      
+        #cvs(img,'fs output')   
+        rmx = cv2.contourArea(fs[0])        #  left most area
+        rmn = rmx         
         fz = 0
-        xd1 = fs[0].x 
+        #xd1 = fs[0].x
+        xd1 = rmx
+        fs = sorted(fs, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
         for ix, f   in enumerate( fs):
-            if f.area() < rmn: rmn = f.area()
-            if f.area() > rmx: rmx = f.area()
-            xd = f.x - fz
+            x,y,w,h = cv2.boundingRect(f)
+                       #fxy = tuple(f[f[:,:,0].argmin()][0]) #  leftmost point of f
+            fx = x 
+            if cv2.contourArea(f) < rmn: rmn = cv2.contourArea(f)
+            if cv2.contourArea(f) > rmx: rmx = cv2.contourArea(f)
+            xd = fx - fz
             if xd > dx:         #   dx is parm
-                img.drawRectangle(f.x - xd/2.0 , 0, 1, img.height
-                                    , width = 5
-                                    , color=Color.RED)
+
+                ih,iw = img.shape[:2] 
+                tl = (int(fx-xd/2.0),0) ;  br = int(fx-xd/2.0),ih
+               # cv2.rectangle(img,(tl),(br),(0,0,255),5)   # s/b vertical line
+                cv2.line(img,(tl),(br),(0,0,255),5)
+                
                 #cpause(['-----break red rec'  , f.x, ix])
                 numb.append(qnumb(tgrp,img,xd1))
                 xd1 = xd
                 #print 'numb is ', numb
                 tgrp = []
-            if db: print(['ix', ix, 'x', f.x
-                          ,'w', f.width()
-                          ,'h', f.height()
+                               
+            if db: print(['ix', ix, 'x', x
+                          ,'w',  w
+                          ,'h',  h
+                          ,'dx', dx
                           ,'xd' , xd
-                          ,'area' ,f.area()]
+                          ,'area' ,cv2.contourArea(f)]
                          )
-            if f.width() < 150:                      #  filter bad blobs here
-                tgrp.append(f)
-                f.draw(color=Color.YELLOW,width=5)
-            img.save(Gd)
+            
+            tgrp.append(f)
+            #f.draw(color=Color.YELLOW,width=5)
+            cv2.drawContours( img, [f], 0, (0, 255, 255), 5 ) 
+            cvs(img)
             #cpause('detail',Gd)
             #if 'p' in numb: break
-            fz = f.x
+            fz = x
+        
+        
+        
         numb.append(qnumb(tgrp,img,xd1))
-        #print 'last numb', numb
+        print 'last numb', numb
         tpat = numb                  # filter out the P junk
         #if db: cpause(['end  1 rd',tpat],Gd)
         if len(tpat)>3:
@@ -219,53 +233,63 @@ def qnumb(grp,img,xd):      #   what number does this group encode??
     returns [ number , flag]   flag is True for good number 
     '''
     global Gd
-    img = img.adaptiveScale((1040,410))
+    img = cv2.resize(img, (1040,410))
     if not len(grp) > 0:
         if db: ( 'zero len group. -- quitting')
         return(0)
     #grp= [gi for gi in grp if   width(gi.x) < 200]
+    x,y,w,h = cv2.boundingRect(grp[0])
     
+    if db: cvs(img,t=0)
     v=0 ;  h=0;
-    miny=grp[0].y
-    maxy=grp[0].y
+    miny=y
+    maxy=y
     
     vc = [] ; xl = 0; xr = 0
     hlim = 100
     #print('vsf  -- height lim ', round(vsf,2), round (hlim,2))
-    xygrp = []    #    the feature set of xy values only
-    for b in grp: 
-        xygrp.append((b.x,b.y))     # collect the xy values 
+    #xygrp = []    #    the feature set of xy values only
+    for b in grp:
+       
+        bx,by,bw,bh = cv2.boundingRect(b)
+        #xygrp.append((x,y))     # collect the xy values 
         #print(b.x, b.y, b.height(),b.area()) # 'h limit', round(171 * vsf,2))
-        if b.height() < 2* b.width(): #  formerly hlim:
+        if bh   < 1.1 * bw: #  formerly hlim:
             h = h + 1
         else:
             v = v + 1
             vc.append(b)   #  collect vertical segments
-        if b.y < miny:
-            miny = b.y
-        if b.y > maxy:
-            maxy = b.y
+            
+        if by < miny:
+            miny = by
+        if by > maxy:
+            maxy = by
         # compute x y w h for draw rectangle
-        xr = grp[0].x           #    first x value
+        zbx,zby,zbw,zbh = cv2.boundingRect(grp[0])
+        xr =zbx           #    first x value
         yr = miny               #    smallest y value
-        wr = grp[-1].x -  xr    #    last largest x value - first x
-         
+        zbx,zby,zbw,zbh = cv2.boundingRect(grp[-1])
+        wr = zbx -  xr    #    last largest x value - first x
         hr = maxy - miny   
         xll =0; xlh=0; xrl=0; xrh = 0
-    for vx in vc:         #   for each vertical segment where is it ?        
-        if (vx.x < wr/2 + xr) :
-            if (vx.y < hr/2 + miny):
+        
+    for vx in vc:         #   for each vertical segment where is it ?
+        vbx,vby,vbw,vbh = cv2.boundingRect(vx)
+        if (vbx < wr/2 + xr) :
+            if (vby < hr/2 + miny):
                 xll = 1
             else:
                 xlh = 1
         else:
-            if (vx.y < hr/2 + miny):               
+            if (vby < hr/2 + miny):               
                 xrl = 1
             else:
                 xrh = 1
-
-    img.drawRectangle(xr,yr,wr,hr,color=Color.BLUE,width=3)
-    img.save(Gd)
+                
+    tl = (xr,miny) ; br = ( xr +  wr, maxy)    
+    cv2.rectangle(img,(tl),(br),(255,0,0),5)   
+   
+    if db: cvs(img,t=0)  #.save(Gd)
     #if db: cpause('qnum',Gd)
     ptrn = h * 10000 +  xll *  1000 + xlh * 100 +  xrl *  10 + xrh
       #  ptrn = [h,    xll,          xlh,         xrl,         xrh]
@@ -275,14 +299,8 @@ def qnumb(grp,img,xd):      #   what number does this group encode??
     if  ptrn == 110 :
         if db: print '<<<<<<<<<< ??? problem pattern 110 xd is  -', xd
         if xd < 100: return 'p'
-    
-    #print ' type is ' ,xtyp
-    dk = xtyp, tpat
-    if dk not in d:       #   create the blob dictionary
-        d[dk] = xygrp
-    else:
-        d[dk] = d[dk] + xygrp
-    return(tpat)    # single digit 
+    return tpat
+
 
 def qptrn(p):   #   this is the pattern of a single digit
     ''' qptrn translates the results of the pattern analysis into
@@ -312,31 +330,14 @@ def qptrn(p):   #   this is the pattern of a single digit
 
 import time
  
-##def cpause(txt= ' ',d = Gd ):
-##     
-##    d.done = False
-##    print (txt , 'click to continue')
-##    while d.isNotDone():
-##        if d.mouseLeft:
-##            d.done = True
-##        if d.mouseRight:
-##            #Gprb.append(Gfilename)
-##            rb = (d.rightButtonDownPosition())
-##            print(rb)
-##            if rb[1] < 15 and rb[1] > 0:
-##                 d.done = True
-##                 d.quit()
-##                 sys.exit(1)
-##                 pass
-##        time.sleep(.2) 
 
 if  __name__ == '__main__':
     print ' rnum  module regression Test'
  #  Gd  = Display((1040,410))
-    for tst in [Rtype]:      #'fat','wt', 'h2o', 
+    for tst in ['fat','h2o','wt' ]:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
         db = True #False  #True
-        cvs(img,tst)
+        #cvs(img )
         #cpause('test image',Gd)
         wt  = hunt(img,tst )     
         print  'result  is', wt 

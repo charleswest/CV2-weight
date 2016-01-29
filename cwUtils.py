@@ -1,17 +1,22 @@
 import cv2
 import numpy as np
 import sys
+global db
 db = False
 def cvd():
+    #global db
     cv2.destroyAllWindows()
-def cvs( img,d=['cvs'],t=1000):
+def cvs( img,d=['cvs'],t=0):
+    global db
+   # print 'cvs db', db
+    
     ''' Display cv2 format image.  Quit program
     if q is input otherwise continue after t msec
     '''
     
     h,w = img.shape[:2]   #   h = rows,  w = cols
     #print'h x w', h, w
-    if max(h,w) > 2000:
+    if max(h,w) > 2400:
         imgC = cv2.resize(img, (w/6,h/6))     #   note h w on resize
     else:
         imgC = np.zeros((h,w))
@@ -21,7 +26,12 @@ def cvs( img,d=['cvs'],t=1000):
         ds = ds + str(s)+ ' '      #  cat list into single string for imshow 
     cv2.imshow(ds , imgC)
     #print 'width x height', w, h
-    key = cv2.waitKey(t)
+    if db:
+        print 'cvs db t', db  , t
+        wt = t
+    else:
+        wt = 1
+    key = cv2.waitKey(wt)
     imgC = imgC - imgC
     if key == ord('q'):
         cvd()
@@ -61,6 +71,7 @@ def dilate(img,iterations):
      
     
 def findLines(img,minLineLength,maxLineGap=10,a=180, b=False):
+    
     height, width = img.shape[:2]
     if b: img = cv2.GaussianBlur(img, (5, 5), 0)                ###  may not needed
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -68,6 +79,7 @@ def findLines(img,minLineLength,maxLineGap=10,a=180, b=False):
     s = (10,4)
     wrk = np.zeros(s)     # workspace for HoughLines
     lines = cv2.HoughLinesP(edges ,1,np.pi/a ,100,wrk,minLineLength,maxLineGap)
+    print 'findLines', len(lines)
     return(lines)
 
 def order_pts(pts):
@@ -90,10 +102,11 @@ def order_pts(pts):
     # return the ordered coordinates
     return rect   
 if  __name__ == '__main__':
+    global db
     db = False
     fil = "cropTest.png"
     img = cv2.imread(fil)
-    cvs(img,'continued 1/2 sec',500)
+    cvs(img,'continued 1/2 sec',5000)
     imgE = erode(img,3)
     imgD = dilate(imgE,3)
     cvs(imgE, ' eroded' ,0)
@@ -118,13 +131,13 @@ if  __name__ == '__main__':
 
     fn = r"lineTest.png"
     img = cv2.imread(fn)
-    cvs(img)  # display input image
-    lines = findLines(img,200,10  )
-    print 'lines shape ', lines.shape
-    print '__________________________________'
-    for x1,y1,x2,y2 in lines[0]:
-        angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
-        print 'x1,y1 {},{}\t x2,y2 {},{} \tangle {}'.format(x1,y1,x2,y2,angle)
-        cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
-    cvs(img)  # display marked up image
+##    cvs(img)  # display input image
+##    lines = findLines(img,200,10  )
+##    print 'lines shape ', lines.shape
+##    print '__________________________________'
+##    for x1,y1,x2,y2 in lines[0]:
+##        angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
+##        print 'x1,y1 {},{}\t x2,y2 {},{} \tangle {}'.format(x1,y1,x2,y2,angle)
+##        cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
+##    cvs(img)  # display marked up image
     cvd()

@@ -6,11 +6,14 @@ list of likely spots to look at for each number
 import time
 from datetime import datetime
 stime =  datetime.now()
-from SimpleCV import Display, Image, Color
-from  weight import Scale, d, iHunt, Gd
+from cwUtils import *
+import numpy as np
+import cv2
+import warnings
+from  weight import Scale,   iHunt 
  
 import  os, glob
-global Gd,db
+global db
 #tfile = 'C:\\Users\\charles\\Desktop\\ScTest\\Qtest.txt'
 #tfile = 'C:\\Users\\charles\\Desktop\\ScTest\\TX\\wtDataTst.txt'
 #tfile = 'C:\\Users\\charles\\Desktop\\ScTest\\Weight\\Tdec30G1.txt'
@@ -67,7 +70,7 @@ with open(tfile,'r' ) as fr:
       print 'el time avg',  str(ex)[2:10] , str(av)[2:10],('    pct OK is', round(pOK,2))
       print "================ end Testloop   ===================="
 trb.close()     
-Gd.quit()
+cvd()
 print ('****************************************************************')
 t = [0,0,0]
 for i in range(0,3):
@@ -75,17 +78,7 @@ for i in range(0,3):
      print  ( ('wt ','fat','h20')[i] , c[i], ' ok of ' ,
                t[i], f[i],'wrong' , round( 100*c[i]/t[i],2), '%'  )
 print 'blob dict'
-##for k,v in sorted(d.iteritems()):
-##    print k ,len(v)
-##    for vi in sorted(v):
-##        print vi
-import pickle
-with  open('dic.txt','wb') as h:        #   save dictionary for later analysis
-    pickle.dump(d,h )
 
-with open('dic.txt', 'rb') as handle:   #  and make sure we can read it 
-  d = pickle.loads(handle.read())
-#iHunt.append((typ, hcnt, tx, iex, nn ))
 iHunt = sorted(iHunt, key=lambda b: (b[0], b[1]))
 print 'sorted'
 ti = 0

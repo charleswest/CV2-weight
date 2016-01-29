@@ -1,17 +1,18 @@
-from cwUtils import *
+
 import numpy as np
 import cv2
+from cwUtils import *
 import warnings
 '''
 This routine takes the imput full size photo and segments it into wt, fat and water
 each of which are saved in a seperate .png file.  cropTest the segmented panel is also saved
 '''
-db = False
+global db
 def Cropx( img):
-    global db,Gd
+    global db
 #    img =  img.getNumpyCv2()     ##    <<<<-----  SCV to OCV
     h,w = img.shape[:2] 
-    print ' w x h', w , h
+    print ' w x h  db ', w , h, db
     if h == 2988:
         img = rotate(img,90)   #  all Dec set rotate
 
@@ -21,13 +22,16 @@ def Cropx( img):
     y1,y2 = fc[0][1],fc[2][1]
     x1,x2 = fc[0][0],fc[2][0]                 ####   needs work rectangle picked at random
  #   img3c = imgC[ y1:y2 ,x1:x2 ].copy()
-    y2 = y2 +5  
+    y1 = y1 - 10 ; y2 = y2 +10     #            some extra height
+     
     img3c = img[ 4*y1:4*y2, 4*x1:4*x2].copy()    #  **********  restore original size 
-    if db: cvs(img3c)
+   
+    if db: cvs(img3c,t=1000)
     angle = tstInvert(img3c)  # cv2 img
     
   #  scv_image = scv_image.rotate(angle,fixed=False)  
     cv_image = rotate(img3c,angle)         # remove skew or inversion
+    cvs(cv_image,t=0)
     cv2.imwrite('cropTest.png',cv_image)   #  save intermediate results
     return(cv_image)
 
@@ -45,10 +49,7 @@ def find_squares(img):     ## cv2 img
     squares = []
     for gray in cv2.split(img):
         #cvs(gray)
-        if db:
-            cv2.imshow('gray',gray)
-            cv2.waitKey()
-        
+         
         for thrs in xrange(0, 255, 26):        #  from 0 to 255 in steps of 26  ~ 10 steps
             if thrs == 0:
                 bin = cv2.Canny(gray, 0, 50, apertureSize=5)
@@ -60,9 +61,7 @@ def find_squares(img):     ## cv2 img
 ##    5 imgray = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
 ##    6 ret,thresh = cv2.threshold(imgray,127,255,0)
 ##    7 im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-                
-          
+         
             im2, contours, hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
             for j,cnt in enumerate(contours):
                 cnt_len = cv2.arcLength(cnt, True)
@@ -87,9 +86,10 @@ def tstInvert(img):
   ' inverted images have a horizontal line at .3 instead of .7 '
   height, width = img.shape[:2]
   fset = findLines(img,minLineLength=100)
+  #print fset
 ##  fh = fset.filter(abs(fset.angle()) < 2 )    #   near horizon
   v7 =  0 ; v3 = 0; maxA = 0
-  for x1,y1,x2,y2 in fset[0]:
+  for x1,y1,x2,y2 in fset[0] :
      angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
      if db: print 'Angle for skew ', angle, maxA
      
@@ -97,11 +97,12 @@ def tstInvert(img):
          maxA = angle
          
      yh = round( y2 / float(height),1 )  # % dist on y axis
+     print 'yh is ' , yh
      if   yh == 0.3: v3 = v3 + 1
      elif yh == 0.7: v7 = v7 + 1
 
   if( v3 > v7):
-      return(180)
+      return(angle + 180)
   else:
       if db: print ' remove skew', maxA
       return( maxA )  #  largest < 2 deg
@@ -109,16 +110,17 @@ def tstInvert(img):
 
 def Part(self,img):
     h,w = img.shape[:2] 
-    fv1 = int(.67 * w )   #.7
+    fv1 = int(.65 * w )   #.7
     fv2 = int(.5 * fv1)
     x1cut = int(.3 * fv2)
     x2cut = int(.95*(fv1 + x1cut))
+    
     dy = .15 * h
-    fy = int(.67 * h)
+    fy = int(.65 * h)
     fyc =   fy           #   cut line for h20 allow some slack
    #cv2.line(img,(x1,y1),    (x2,y2),   (0,255,0)             ,2) 
     cv2.line(img,(x1cut,0),  (x1cut,h),   (0,0,0)        ,thickness=3)
-    cv2.line(img,( 0,fy),    ( w, fy ),   (0,0,0)        ,thickness=3)
+    cv2.line(img,( 0,fy),    ( w, fy ),   (0,255,0)        ,thickness=3)
     cv2.line(img, (fv1,0),   ( fv1,h),    (0,0,0)        ,thickness=3)
 #   ROI = imgC[ y1:y2,     x1:x2   ].copy()
     wt  = img [  0:fy,   x1cut:fv1  ].copy()  #  100  x 300   st at 150   asp = .33
@@ -134,7 +136,7 @@ def Part(self,img):
     return([wt,fat,h2o])
   
 if  __name__ == '__main__':
-     
+    global db     
     db = True
     iHunt = []
     fil = "input.png"
@@ -142,14 +144,15 @@ if  __name__ == '__main__':
     print 'sworks.py', fil
     imgC = cv2.imread(fil)
     if not fil == "input.png":  img.save("input.png")
-    cvs(imgC,fil)
+    cvs(imgC)
     imtC = Cropx( imgC)  # returns cv img 
     cv2.imwrite('cropTest.png',imtC) 
-    cvs(imtC,'croptest')
+    cvs(imtC,t=0)
     [wt,fat,h2o]=Part(1,imtC)
-    cvs(h2o,'h2o',0)
-    cvs(wt,'wt',0)
-    cvs(fat,'fat',0)
+    print 'db is', db
+    cvs(h2o)
+    cvs(wt,t=0)
+    cvs(fat,t=0)
 
     cvd()
     print('end sworks')
