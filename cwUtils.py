@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import sys
 global db
-db = False
+db = True
 def cvd():
     #global db
     cv2.destroyAllWindows()
