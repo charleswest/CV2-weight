@@ -15,17 +15,32 @@ def Cropx( img):
     print ' w x h  db ', w , h, db
     if h == 2988:
         img = rotate(img,90)   #  all Dec set rotate
+    # Convert BGR to HSV
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # define range of blue color in HSV
+    lower_blue = np.array([50,50,110])   #np.array([110,50,50])
+    upper_blue = np.array( [255,255,255])   #np.array([130,255,255])
+    # Threshold the HSV image to get only blue colors
+    mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    #  find the contour of the mask which needs to be greyscale
+    #imgx = cv2.cvtColor(mask,cv2.COLOR_HSV2BGR_FULL )
+    cvs(mask)
+    cv2.imwrite('tempgray.png',mask)
+    imgx = cv2.imread('tempgray.png',0)
+    ret,thresh = cv2.threshold(imgx,127,255,0)
 
-#    imgC =  img.getNumpyCv2()     ##    <<<<-----  SCV to OCV
-    imgC = cv2.resize(img, (w/4,h/4))               # **************  shrink for detection
-    fc =  find_squares(imgC)
-    y1,y2 = fc[0][1],fc[2][1]
-    x1,x2 = fc[0][0],fc[2][0]                 ####   needs work rectangle picked at random
- #   img3c = imgC[ y1:y2 ,x1:x2 ].copy()
-    y1 = y1 - 10 ; y2 = y2 +10     #            some extra height
-     
-    img3c = img[ 4*y1:4*y2, 4*x1:4*x2].copy()    #  **********  restore original size 
-   
+    im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+    for cnt in contours:
+        if cv2.contourArea(cnt) > 1000:
+            x,y,w,h = cv2.boundingRect(cnt)
+            #cv2.rectangle(img,(x,y),(x+w,y+h),YELLOW,5)
+            print 'xy### wh', x , y, w, h , cv2.contourArea(cnt)
+            img3c = img[ y-3:y+h+3 ,x:x+w ].copy()
+            cv2.imwrite('img3c.png',img3c)
+            cvs(img3c)
+            break
+       
     if db: cvs(img3c,t=1000)
     angle = tstInvert(img3c)  # cv2 img
     
@@ -41,46 +56,7 @@ def angle_cos(p0, p1, p2):
         d1, d2 = p0-p1, p2-p1
         return abs( np.dot(d1, d2) / np.sqrt( np.dot(d1, d1)*np.dot(d2, d2) ) )     
     
-def find_squares(img):     ## cv2 img
-    global db
-    #img = cv2.GaussianBlur(img, (5, 5), 0)
- #   img =  img.getNumpyCv2()
-    
-    squares = []
-    for gray in cv2.split(img):
-        #cvs(gray)
-         
-        for thrs in xrange(0, 255, 26):        #  from 0 to 255 in steps of 26  ~ 10 steps
-            if thrs == 0:
-                bin = cv2.Canny(gray, 0, 50, apertureSize=5)
-                bin = cv2.dilate(bin, None)
-            else:
-                retval, bin = cv2.threshold(gray, thrs, 255, cv2.THRESH_BINARY)
 
-##      im = cv2.imread('test.jpg')
-##    5 imgray = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
-##    6 ret,thresh = cv2.threshold(imgray,127,255,0)
-##    7 im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-         
-            im2, contours, hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-            for j,cnt in enumerate(contours):
-                cnt_len = cv2.arcLength(cnt, True)
-                cnt = cv2.approxPolyDP(cnt, 0.02*cnt_len, True)
-                if len(cnt) == 4 and cv2.contourArea(cnt) > 10000 and cv2.isContourConvex(cnt):
-                    cnt = cnt.reshape(-1, 2)
-                    fc = order_pts(cnt)        #     fc now tl, tr, br, bl
-                    y1,y2 = fc[0][1],fc[2][1]
-                    x1,x2 = fc[0][0],fc[2][0]
-                    sh = abs(y1-y2); sw = abs(x1-x2)
-                    aspect = round (sh / sw ,3)
-                    
-                    if aspect > .35 and aspect < .40:
-                        print 'fc  y1,y2 {},{} x1,x2 {},{}  asp {}'.format( y1,y2 ,x1,x2,aspect)
-                        squares.append(fc)
-                        return(fc)
-                    
-           
-    return squares
 
 def tstInvert(img):
   ' inverted images have a horizontal line at .3 instead of .7 '
