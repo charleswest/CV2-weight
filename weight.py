@@ -8,9 +8,9 @@ from sworks import Cropx, Part
 from rnum import iHunt,  hunt   
 
 class Scale:
-    global db,tmpf 
+    global tmpf 
     name = 'Scale'
-    def __init__(self,fname):
+    def __init__(self,fname,db):
         global tmpf
         self.img = cv2.imread(fname)
         if not fname == "input.png": cv2.imwrite("input.png",self.img)
@@ -39,7 +39,7 @@ if  __name__ == '__main__':
     print 'weight.py', filename
     
           
-    s = Scale(filename)
+    s = Scale(filename,db)
    
     print  s.name, 'wt is' ,s.nwt,'iHunt global'
     for i in iHunt:

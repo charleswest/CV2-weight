@@ -51,8 +51,8 @@ with open(tfile,'r' ) as fr:
       trueWt = data[0]         #   see key above
       prob = False
       #rd  = rScale(wfile,False )
-      s = Scale(wfile)
-      db = True ; 
+      s = Scale(wfile,db)
+        
       #for i in range(0,3):
       #if data[2] <> s.nh2o: raise ValueError('h2o failed')
       for i,rd in enumerate ([s.nwt, s.nfat, s.nh2o]):
