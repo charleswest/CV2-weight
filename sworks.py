@@ -12,7 +12,7 @@ def Cropx( img):
     global db
 #    img =  img.getNumpyCv2()     ##    <<<<-----  SCV to OCV
     h,w = img.shape[:2] 
-    print ' w x h  db ', w , h, db
+#    print ' w x h  db ', w , h, db
     if h == 2988:
         img = rotate(img,90)   #  all Dec set rotate
     # Convert BGR to HSV
@@ -32,7 +32,7 @@ def Cropx( img):
     im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
-        if cv2.contourArea(cnt) > 1000:
+        if cv2.contourArea(cnt) > 100000:
             x,y,w,h = cv2.boundingRect(cnt)
             #cv2.rectangle(img,(x,y),(x+w,y+h),YELLOW,5)
             print 'xy### wh', x , y, w, h , cv2.contourArea(cnt)
@@ -61,24 +61,30 @@ def angle_cos(p0, p1, p2):
 def tstInvert(img):
   ' inverted images have a horizontal line at .3 instead of .7 '
   height, width = img.shape[:2]
-  fset = findLines(img,minLineLength=100)
-  #print fset
-##  fh = fset.filter(abs(fset.angle()) < 2 )    #   near horizon
+  stuff = findLines(img,300,30)
   v7 =  0 ; v3 = 0; maxA = 0
-  for x1,y1,x2,y2 in fset[0] :
-     angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
-     if db: print 'Angle for skew ', angle, maxA
-     
-     if abs(angle) > abs(maxA) and abs(angle) < 3:
-         maxA = angle
+  for line in stuff:
+      for x1,y1,x2,y2  in line :
+#         print 'line' ,x1, y1, x2, y2
+         angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
+         if db:
+             print 'Angle for skew ', angle, maxA,
+             cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
+             
          
-     yh = round( y2 / float(height),1 )  # % dist on y axis
-     print 'yh is ' , yh
-     if   yh == 0.3: v3 = v3 + 1
-     elif yh == 0.7: v7 = v7 + 1
-
+         if abs(angle) > abs(maxA) and abs(angle) < 3:
+             maxA = angle
+             
+         yh = round( y2 / float(height),1 )  # % dist on y axis
+         if db: print 'yh is ' , yh
+         if   yh == 0.3: v3 = v3 + 1
+         elif yh == 0.7: v7 = v7 + 1
+  if db:
+      print 'V3 {} V7 {} maxA {} lines found {} '.format(v3, v7, maxA, len(stuff))
+      cvs(img)
+  
   if( v3 > v7):
-      return(angle + 180)
+      return(maxA + 180)
   else:
       if db: print ' remove skew', maxA
       return( maxA )  #  largest < 2 deg

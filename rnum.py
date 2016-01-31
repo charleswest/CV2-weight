@@ -16,7 +16,7 @@ xtyp = ''
 
 def hunt(imgx,typ ):
     global Gd, db ,xtyp
-    
+   # cvs(imgx,'debug')
     #imgy = imgx.adaptiveScale((1040,410))
     imgy = cv2.resize(imgx, (1040,410))
     #hue = max(imgy.huePeaks())[0] +15
@@ -33,12 +33,12 @@ def hunt(imgx,typ ):
    
     exlist = {
             'wt' :  [8,  2  ],
-            'h2o' : [5   ],
+            'h2o' : [0,   5   ],
             'fat' : [2,  8  ]
               }                             #  200 5 600  3000   works h20
     txlist = {
             'wt' :  [ 160, 140   ],
-            'h2o' : [ 140   ],  #160, 140, 205 ],
+            'h2o' : [ 127, 140   ],  #160, 140, 205 ],
             'fat' : [ 160  ,140 ]
              }
     lim  =  typex[typ][0]    #limt[0]
@@ -47,7 +47,6 @@ def hunt(imgx,typ ):
     mx =    typex[typ][3]
     dz =    typex[typ][4]
     #imgy.save(Gd)
-    cvs(imgy)
     for iex in exlist[typ]:
         if db: print '-----rdNumber    ms', ms, ' mx',  mx #, imgy.area()
 
@@ -100,7 +99,7 @@ def hunt2(imgx,typ,hcnt):
               }                             #  200 5 600  3000   works h20
     txlist = {
             'wt' :  [ 160, 140   ],
-            'h2o' : [ 130, 160, 140   ],  #160, 140, 205 ],
+            'h2o' : [ 127, 160, 140   ],  #160, 140, 205 ],
             'fat' : [ 187, 160, 205, 140   ]
              }
     lim  =  typex[typ][0]    #limt[0]
@@ -334,7 +333,7 @@ import time
 if  __name__ == '__main__':
     print ' rnum  module regression Test'
  #  Gd  = Display((1040,410))
-    for tst in ['fat','h2o','wt' ]:      #['fat','wt', 'h2o']; 
+    for tst in ['h2o']:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
         db = True #False  #True
         #cvs(img )

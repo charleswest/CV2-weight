@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from cwUtils import cvs, cvd, erode, db
+from cwUtils import cvs, cvd, erode 
 import numpy as np
 import cv2
 global db,Gd,tmpf
@@ -36,7 +36,7 @@ if  __name__ == '__main__':
     filename = "input.png"
     print 'weight.py', filename
     
-    db = False
+    db = True
     
         
     s = Scale(filename)

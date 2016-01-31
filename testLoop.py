@@ -1,7 +1,8 @@
 '''
 This program loads all the images with filenames in the
-file tfile sorted by wt, fat or h2o in order to derive a
-list of likely spots to look at for each number
+file tfile sorted by wt, fat or h2o in order fully test
+the program.  Problems are logged in the .TRB file that is created
+on open.
 '''
 import time
 from datetime import datetime
@@ -14,12 +15,19 @@ from  weight import Scale,   iHunt
  
 import  os, glob
 global db
-#tfile = 'C:\\Users\\charles\\Desktop\\ScTest\\Qtest.txt'
-#tfile = 'C:\\Users\\charles\\Desktop\\ScTest\\TX\\wtDataTst.txt'
-#tfile = 'C:\\Users\\charles\\Desktop\\ScTest\\Weight\\Tdec30G1.txt'
-tfile = 'ScTest\\T2015Doris.txt'      #    should work on Git Hub
+db = False
+#tfile = 'F:\\ScTest\\Qtest.txt'
+#tfile = 'F:\\ScTest\\TX\\wtDataTst.txt'
+tfile = 'F:\\ScTest\\Tdec30G1.txt'   # F: is write protected on VM
+#tfile = 'ScTest\\T2015Doris.txt'      #    should work on Git Hub with limited ScTest
+#tfile = 'VM-trb1.txt'
+try:
+    trb = open(tfile.replace('txt','TRB.txt'),'w')
+except IOError as e:
+    print "I/O error({0}): {1}".format(e.errno, e.strerror)
+    trb = open('VM-trb.txt','w')            # catch all problem file for VMs
 
-trb = open(tfile.replace('txt','TRB.txt'),'w')
+
 print 'input test file ', tfile
 c = [0,0,0] ; f = [0,0,0]
 correct = 0; failed = 0;
