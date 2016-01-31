@@ -2,14 +2,11 @@ import cv2
 import numpy as np
 import sys
 global db
-db = False
+
 def cvd():
     #global db
     cv2.destroyAllWindows()
-def cvs( img,d=['cvs'],t=0):
-    global db
-   # print 'cvs db', db
-    
+def cvs(db, img,d=['cvs'],t=0 ):
     ''' Display cv2 format image.  Quit program
     if q is input otherwise continue after t msec
     '''
@@ -27,7 +24,7 @@ def cvs( img,d=['cvs'],t=0):
     cv2.imshow(ds , imgC)
     #print 'width x height', w, h
     if db:
-        print 'cvs db t', db  , t
+        #print 'cvs db t', db  , t
         wt = t
     else:
         wt = 1
@@ -70,17 +67,17 @@ def dilate(img,iterations):
     
      
     
-def findLines(img,minLineLength,maxLineGap=10,a=180, b=False):
-    
-    height, width = img.shape[:2]
-    if b: img = cv2.GaussianBlur(img, (5, 5), 0)                ###  may not needed
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(gray,50,150,apertureSize = 3)
-    s = (10,4)
-    wrk = np.zeros(s)     # workspace for HoughLines
-    lines = cv2.HoughLinesP(edges ,1,np.pi/a ,100,wrk,minLineLength,maxLineGap)
-    print 'findLines', len(lines)
-    return(lines)
+##def findLines(img,minLineLength,maxLineGap=10,a=180, b=False):
+##    
+##    height, width = img.shape[:2]
+##    if b: img = cv2.GaussianBlur(img, (5, 5), 0)                ###  may not needed
+##    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+##    edges = cv2.Canny(gray,50,150,apertureSize = 3)
+##    s = (10,4)
+##    wrk = np.zeros(s)     # workspace for HoughLines
+##    lines = cv2.HoughLinesP(edges ,1,np.pi/a ,100,wrk,minLineLength,maxLineGap)
+##    print 'findLines', len(lines)
+##    return(lines)
 
 def order_pts(pts):
     # pts is a list of 4 xy pairs that define a rectangle
@@ -103,19 +100,19 @@ def order_pts(pts):
     return rect   
 if  __name__ == '__main__':
     global db
-    db = False
+    db = True
     fil = "cropTest.png"
     img = cv2.imread(fil)
-    cvs(img,'continued 1/2 sec',5000)
+    cvs(db,img,'continued 1/2 sec',5000)
     imgE = erode(img,3)
     imgD = dilate(imgE,3)
-    cvs(imgE, ' eroded' ,0)
-    cvs(imgD, 'dilated', 0)
+    cvs(db,imgE, ' eroded' ,0)
+    cvs(db,imgD, 'dilated', 0)
     fil = "input.png"
     img = cv2.imread(fil)
-    cvs(img,['input.png ', 27, 'list test'],2000)
+    cvs(db,img,['input.png ', 27, 'list test'],2000)
     im2 = rotate(img,90)
-    cvs(im2)
+    cvs(db,im2)
     ######################  test order pts
     pts =  np.array([
             [380,218],

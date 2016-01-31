@@ -8,7 +8,7 @@ def findLines(img,minLineLength,maxLineGap=10,a=180, b=False):
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray,50,150,apertureSize = 3)
     lines = cv2.HoughLinesP(edges,1,np.pi/180,100,minLineLength,maxLineGap)
-    print 'findLines', len(lines)
+    print 'findLines 1.0', len(lines)
     return(lines)
 if  __name__ == '__main__':
     global db
@@ -25,5 +25,6 @@ if  __name__ == '__main__':
             angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
             print 'x1,y1 {},{}\t x2,y2 {},{} \tangle {}'.format(x1,y1,x2,y2,angle)
             cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
-    cvs(img)  # display marked up image
+    print ' db',db
+    cvs(db,img)  # display marked up image
     cvd()
