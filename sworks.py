@@ -2,14 +2,15 @@
 import numpy as np
 import cv2
 from cwUtils import *
+from findLines import findLines
 import warnings
 '''
 This routine takes the imput full size photo and segments it into wt, fat and water
 each of which are saved in a seperate .png file.  cropTest the segmented panel is also saved
 '''
 global db
-def Cropx( img):
-    global db
+def Cropx(db, img):
+    
 #    img =  img.getNumpyCv2()     ##    <<<<-----  SCV to OCV
     h,w = img.shape[:2] 
 #    print ' w x h  db ', w , h, db
@@ -24,7 +25,7 @@ def Cropx( img):
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
     #  find the contour of the mask which needs to be greyscale
     #imgx = cv2.cvtColor(mask,cv2.COLOR_HSV2BGR_FULL )
-    cvs(mask)
+    cvs(db,mask)
     cv2.imwrite('tempgray.png',mask)
     imgx = cv2.imread('tempgray.png',0)
     ret,thresh = cv2.threshold(imgx,127,255,0)
@@ -38,15 +39,15 @@ def Cropx( img):
             print 'xy### wh', x , y, w, h , cv2.contourArea(cnt)
             img3c = img[ y-3:y+h+3 ,x:x+w ].copy()
             cv2.imwrite('img3c.png',img3c)
-            cvs(img3c)
+            cvs(db,img3c)
             break
        
-    if db: cvs(img3c,t=1000)
-    angle = tstInvert(img3c)  # cv2 img
+    if db: cvs(db,img3c,t=1000)
+    angle = tstInvert(db,img3c)  # cv2 img
     
   #  scv_image = scv_image.rotate(angle,fixed=False)  
     cv_image = rotate(img3c,angle)         # remove skew or inversion
-    cvs(cv_image,t=0)
+    cvs(db,cv_image,t=0)
     cv2.imwrite('cropTest.png',cv_image)   #  save intermediate results
     return(cv_image)
 
@@ -58,7 +59,7 @@ def angle_cos(p0, p1, p2):
     
 
 
-def tstInvert(img):
+def tstInvert(db,img):
   ' inverted images have a horizontal line at .3 instead of .7 '
   height, width = img.shape[:2]
   stuff = findLines(img,300,30)
@@ -81,7 +82,7 @@ def tstInvert(img):
          elif yh == 0.7: v7 = v7 + 1
   if db:
       print 'V3 {} V7 {} maxA {} lines found {} '.format(v3, v7, maxA, len(stuff))
-      cvs(img)
+      cvs(db,img)
   
   if( v3 > v7):
       return(maxA + 180)
@@ -90,7 +91,7 @@ def tstInvert(img):
       return( maxA )  #  largest < 2 deg
       #return(0)        # try with skew
 
-def Part(self,img):
+def Part(self,img,db):
     h,w = img.shape[:2] 
     fv1 = int(.65 * w )   #.7
     fv2 = int(.5 * fv1)
@@ -111,7 +112,7 @@ def Part(self,img):
     fat  = img[ 0:fy,    x2cut:w  ].copy()
     h2o =  img[ fy:h,     x1cut:fv2   ].copy()
 
-    if db: cvs(img )
+    if db: cvs(db,img )
 
 ##    h2o = img.crop((x1cut,fyc), (fv2, img.height)  )
     
@@ -119,22 +120,22 @@ def Part(self,img):
   
 if  __name__ == '__main__':
     global db     
-    db = True
+    db = False
     iHunt = []
     fil = "input.png"
     #fil = 'C:\\github\\cvWeight\\Thin.JPG' 
     print 'sworks.py', fil
     imgC = cv2.imread(fil)
     if not fil == "input.png":  img.save("input.png")
-    cvs(imgC)
-    imtC = Cropx( imgC)  # returns cv img 
+    cvs(db,imgC)
+    imtC = Cropx(db, imgC)  # returns cv img 
     cv2.imwrite('cropTest.png',imtC) 
-    cvs(imtC,t=0)
-    [wt,fat,h2o]=Part(1,imtC)
+    cvs(db,imtC,t=0)
+    [wt,fat,h2o]=Part(1,imtC,db)
     print 'db is', db
-    cvs(h2o)
-    cvs(wt,t=0)
-    cvs(fat,t=0)
+    cvs(db,h2o)
+    cvs(db,wt,t=0)
+    cvs(db,fat,t=0)
 
     cvd()
     print('end sworks')

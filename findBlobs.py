@@ -3,12 +3,12 @@ import numpy as np
 import cv2
 import sys
 global db
-from cwUtils import db,cvs, cvd , erode, dilate
+from cwUtils import cvs, cvd , erode, dilate
 
-#db = True                   
-def  findBlobs(imx,ms,mx,tval=127):
+db = True                   
+def  findBlobs(imx,ms,mx,db,tval=127):
     
-    global db
+     
     Erd = 2
     print 'This is find blobs  1.0 ms mx db', ms, mx ,db
     imgray = cv2.cvtColor(imx,cv2.COLOR_BGR2GRAY)
@@ -16,7 +16,7 @@ def  findBlobs(imx,ms,mx,tval=127):
     thresh = erode(thresh,Erd)
     thresh = dilate(thresh,1)
     #print 'db findBlobs' , db
-    cvs(thresh)
+    cvs(db,thresh)
     im3,cnt, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     #  note lamda is expression for leftmost extreme of the contour
@@ -40,7 +40,7 @@ def  findBlobs(imx,ms,mx,tval=127):
        else:
           cv2.drawContours(imx,[con], 0, (0,0,255), 2)       #  red
           
-#       if db:cvs(imx,'included')
+#       if db:cvs(db,imx,'included')
     return rvl
    
 if __name__ == '__main__':
@@ -61,10 +61,10 @@ if __name__ == '__main__':
     d = 0
 ##    img = erode(img,4)
 ##    img = dilate(img,0)
-    #cvs(img)
+    #cvs(db,img)
     ms = 1500
     mx = 10000
-    cnt =  findBlobs( img,ms,mx) # will modify img to show cnt
+    cnt =  findBlobs( img,ms,mx,db) # will modify img to show cnt
     cnt  =   sorted(cnt, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
     for f in cnt:
         cv2.drawContours(srt,[f],0,(255,0,0),2)
@@ -72,16 +72,16 @@ if __name__ == '__main__':
         x,y,w,h = cv2.boundingRect(f)
         a =  cv2.contourArea(f)
         print 'x {}  y {}\tw {}\th {}\ta {} '.format( x, y , w, h,a)
-        cvs(srt,'rtnd')
+        cvs(db,srt,'rtnd')
      
         
     print '{} blobs found'.format (len(cnt))
-    cvs(img)
+    cvs(db,img)
     cv2.drawContours(srt,cnt,-1,(0,255,255),2)            # green line w 3
     
     #print cnt
  
 
-    cvs(srt,'rtnd',50)
+    cvs(db,srt,'rtnd',50)
     x = cv2.waitKey()
     cvd()

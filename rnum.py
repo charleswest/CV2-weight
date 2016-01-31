@@ -1,10 +1,8 @@
-
-#from SimpleCV import Image, Color, Display
-from findBlobs import findBlobs
-from cwUtils import *
 import numpy as np
 import cv2
 import sys
+from findBlobs import findBlobs
+from cwUtils import *
 global db 
 Rtype = 'h2o'
 #Gd  = Display((1040,410)) 
@@ -16,7 +14,7 @@ xtyp = ''
 
 def hunt(imgx,typ ):
     global Gd, db ,xtyp
-   # cvs(imgx,'debug')
+   # cvs(db,imgx,'debug')
     #imgy = imgx.adaptiveScale((1040,410))
     imgy = cv2.resize(imgx, (1040,410))
     #hue = max(imgy.huePeaks())[0] +15
@@ -55,7 +53,7 @@ def hunt(imgx,typ ):
             #img = imgy.binarize(tx).invert()
             #img = imgy.erode(iex)
             img = erode(imgy,iex)
-            cvs(img)
+            cvs(db,img)
             hcnt = hcnt + 1
             # n is the pattern, rmx the max size, rms min size
             n,rmx,rms = rdNumber(img,ex=iex, ms=ms   ,dz=dz , mx = mx ,tval=tx )
@@ -83,7 +81,7 @@ def hunt2(imgx,typ,hcnt):
 #    imgy = imgx.adaptiveScale((1040,410))
     imgy = cv2.resize(imgx, (1040,410))
     img = imgy
-    if db: cvs(img,'hunt 2',0)
+    if db: cvs(db,img,'hunt 2',0)
     
     xtyp = typ
     typex = {
@@ -108,13 +106,13 @@ def hunt2(imgx,typ,hcnt):
     mx =    typex[typ][3]
     dz =    typex[typ][4]
    
-    cvs(img)
+    cvs(db,img)
     for iex in exlist[typ]:
         if db: print '-----rdNumber h2   ms', ms, ' mx',  mx 
         for tx in txlist[typ]:
             hcnt = hcnt + 1
             img = erode(imgy,iex)
-            cvs(img)
+            cvs(db,img)
             #if db: cpause( ['Erode image',iex],Gd)
             # n is the pattern, rmx the max size, rms min size
             n,rmx,rms = rdNumber(img,ex=iex, ms=ms   ,dz=dz , mx = mx ,tval=tx )
@@ -149,18 +147,18 @@ def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
     
     print '-----rdNumber   tval',tval,' ex',ex,'ms', ms, 'mxsize', mx 
     #  img.clearLayers()
-    #cvs(img,'fs input')   #img.save(Gd)
-    fs = findBlobs(img, ms, mx , tval=tval )
+    #cvs(db,img,'fs input')   #img.save(Gd)
+    fs = findBlobs(img, ms, mx , db,tval=tval )
     if (fs is  None):
         if db: print ' no features found'
-        cvs(img)
+        cvs(db,img)
         return ([0,0,0,0],0,0)
     else:
 #        fs = sorted(fs, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
         fs = sorted(fs, key = lambda cnt:cv2.contourArea(cnt))
 
         cv2.drawContours( img, fs, -1, (0, 0, 255), 5 )      
-        #cvs(img,'fs output')   
+        #cvs(db,img,'fs output')   
         rmx = cv2.contourArea(fs[0])        #  left most area
         rmn = rmx         
         fz = 0
@@ -198,7 +196,7 @@ def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
             tgrp.append(f)
             #f.draw(color=Color.YELLOW,width=5)
             cv2.drawContours( img, [f], 0, (0, 255, 255), 5 ) 
-            cvs(img)
+            cvs(db,img)
             #cpause('detail',Gd)
             #if 'p' in numb: break
             fz = x
@@ -239,7 +237,7 @@ def qnumb(grp,img,xd):      #   what number does this group encode??
     #grp= [gi for gi in grp if   width(gi.x) < 200]
     x,y,w,h = cv2.boundingRect(grp[0])
     
-    if db: cvs(img,t=0)
+    if db: cvs(db,img,t=0)
     v=0 ;  h=0;
     miny=y
     maxy=y
@@ -288,7 +286,7 @@ def qnumb(grp,img,xd):      #   what number does this group encode??
     tl = (xr,miny) ; br = ( xr +  wr, maxy)    
     cv2.rectangle(img,(tl),(br),(255,0,0),5)   
    
-    if db: cvs(img,t=0)  #.save(Gd)
+    if db: cvs(db,img,t=0)  #.save(Gd)
     #if db: cpause('qnum',Gd)
     ptrn = h * 10000 +  xll *  1000 + xlh * 100 +  xrl *  10 + xrh
       #  ptrn = [h,    xll,          xlh,         xrl,         xrh]
@@ -332,11 +330,12 @@ import time
 
 if  __name__ == '__main__':
     print ' rnum  module regression Test'
+    db = False
  #  Gd  = Display((1040,410))
     for tst in ['h2o']:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
-        db = True #False  #True
-        #cvs(img )
+        db = False #False  #True
+        #cvs(db,img )
         #cpause('test image',Gd)
         wt  = hunt(img,tst )     
         print  'result  is', wt 
