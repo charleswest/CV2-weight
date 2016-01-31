@@ -12,8 +12,8 @@ d = {}                      # global dictionary of n : xy values
 xtyp = ''
 
 
-def hunt(imgx,typ ):
-    global Gd, db ,xtyp
+def hunt(imgx,typ ,db):
+    global xtyp
    # cvs(db,imgx,'debug')
     #imgy = imgx.adaptiveScale((1040,410))
     imgy = cv2.resize(imgx, (1040,410))
@@ -25,13 +25,13 @@ def hunt(imgx,typ ):
     typex = {
                  #    lim   limh    ms     mx   dz   
              'wt' : [130.0,150.0,  500,  3500,   60],    
-             'h2o': [ 60.0, 80.0,  1000,  10000,  80],
-             'fat': [  9.0, 15.0,  1000,  8000,   100]       
+             'h2o': [ 60.0, 80.0,  1900,  10000,  80],
+             'fat': [  9.0, 15.0,  1000,   8000,  90]       
             }
    
     exlist = {
             'wt' :  [8,  2  ],
-            'h2o' : [0,   5   ],
+            'h2o' : [0,  2   ],
             'fat' : [2,  8  ]
               }                             #  200 5 600  3000   works h20
     txlist = {
@@ -149,16 +149,16 @@ def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
     #  img.clearLayers()
     #cvs(db,img,'fs input')   #img.save(Gd)
     fs = findBlobs(img, ms, mx , db,tval=tval )
-    if (fs is  None):
+    if not fs:
         if db: print ' no features found'
         cvs(db,img)
         return ([0,0,0,0],0,0)
     else:
 #        fs = sorted(fs, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
         fs = sorted(fs, key = lambda cnt:cv2.contourArea(cnt))
-
+        #print fs 
         cv2.drawContours( img, fs, -1, (0, 0, 255), 5 )      
-        #cvs(db,img,'fs output')   
+        cvs(db,img,t=0)   
         rmx = cv2.contourArea(fs[0])        #  left most area
         rmn = rmx         
         fz = 0
@@ -330,14 +330,14 @@ import time
 
 if  __name__ == '__main__':
     print ' rnum  module regression Test'
-    db = False
+    db = True
  #  Gd  = Display((1040,410))
-    for tst in ['h2o']:      #['fat','wt', 'h2o']; 
+    for tst in ['fat']:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
-        db = False #False  #True
+       
         #cvs(db,img )
         #cpause('test image',Gd)
-        wt  = hunt(img,tst )     
+        wt  = hunt(img,tst,db )     
         print  'result  is', wt 
         print 'iHunt',iHunt
 ##    print 'blob dictionary'

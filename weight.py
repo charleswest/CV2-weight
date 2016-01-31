@@ -25,9 +25,9 @@ class Scale:
         cv2.imwrite("wtTest.png",  self.wt)
         #  hunt for the appropriate number in each partitioned image
         if db: cvs(db,self.wt,'weight',0)  
-        self.nwt =  hunt(self.wt,'wt')            
-        self.nfat = hunt(self.fat,'fat')            
-        self.nh2o = hunt(self.h2o,'h2o')
+        self.nwt =  hunt(self.wt,'wt',db)            
+        self.nfat = hunt(self.fat,'fat',db)            
+        self.nh2o = hunt(self.h2o,'h2o',db)
     
         return(None)
     

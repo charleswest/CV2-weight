@@ -20,7 +20,7 @@ db = False
 #tfile = 'F:\\ScTest\\TX\\wtDataTst.txt'
 tfile = 'F:\\ScTest\\Tdec30G1.txt'   # F: is write protected on VM
 #tfile = 'ScTest\\T2015Doris.txt'      #    should work on Git Hub with limited ScTest
-#tfile = 'VM-trb1.txt'
+#tfile = 'VM-trb.txt'
 try:
     trb = open(tfile.replace('txt','TRB.txt'),'w')
 except IOError as e:
@@ -54,7 +54,8 @@ with open(tfile,'r' ) as fr:
       s = Scale(wfile,db)
         
       #for i in range(0,3):
-      #if data[2] <> s.nh2o: raise ValueError('h2o failed')
+##      if data[1] <> s.nfat: raise ValueError('fat failed')
+##      if data[2] <> s.nh2o: raise ValueError('h2o failed')
       for i,rd in enumerate ([s.nwt, s.nfat, s.nh2o]):
          if rd == data[i]:
             print (rd ,  '  is correct')

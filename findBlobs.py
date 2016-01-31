@@ -30,10 +30,12 @@ def  findBlobs(imx,ms,mx,db,tval=127):
        cntp = cv2.approxPolyDP(con, 0.02*cnt_len, True)
 ##        and cv2.contourArea(cntp) > ms \
 ##        and cv2.contourArea(cntp) < mx \
- #      print len(cntp)  #    look for suitable contours                 
+ #      print len(cntp)  #    look for suitable contours
+       x,y,w,h = cv2.boundingRect(con)
        if len(cntp) > 3  \
           and cv2.isContourConvex(cntp) \
-          and  area > ms and area < mx:
+             and abs( 1.0 - float(w)/float(h) ) > .1 \
+             and  area > ms and area < mx:
             rvl.append(con)
             cv2.drawContours(imx,[con], 0, (0,255,255), 2)    # yellow
         
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     fn = 'h2oTest.png'
 ##    fn = 'cropTest.png'
 ##    fn = 'wtTest.png'
-##    fn = 'fatTest.png'
+    fn = 'fatTest.png'
     imgx = cv2.imread(fn)
     img = cv2.resize(imgx, (1040,410))
     srt = img.copy()
@@ -71,7 +73,8 @@ if __name__ == '__main__':
         print 'array f ',  f[0] ,
         x,y,w,h = cv2.boundingRect(f)
         a =  cv2.contourArea(f)
-        print 'x {}  y {}\tw {}\th {}\ta {} '.format( x, y , w, h,a)
+        asp = round(abs( 1.00 - float(w)/float(h) ),2)
+        print 'x {}  y {}\tw {}\th {}\ta {}\tasp {} '.format( x, y , w, h,a,asp)
         cvs(db,srt,'rtnd')
      
         
