@@ -64,7 +64,7 @@ if __name__ == '__main__':
     db = True
     print 'funny ', db
  
-    tst = 'fat'
+    tst = 'h2o'
     imgx = cv2.imread(tst +'Test.png') 
     #imgx = cv2.imread(fn)
     img = stdSize(imgx,tst)   #cv2.resize(imgx, (1040,410))
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     h,w = img.shape[:2]  
  
     #cvs(db,img)
-    ms =  100;    mx = 10000;  erd = 2; tx=127
+    ms =  325;    mx = 10000;  erd =2; tx=160
     cnt =  findBlobs( img,ms,mx,erd,db,tx) # will modify img to show cnt
     cnt  =   sorted(cnt, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
     print ' input is {} width {} height {} ms {} mx {} tval {}   '\

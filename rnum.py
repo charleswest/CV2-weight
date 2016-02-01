@@ -4,7 +4,7 @@ import sys
 from findBlobs import findBlobs, stdSize
 from cwUtils import *
 global db 
-Rtyp = ['wt']
+Rtyp = ['h2o']
 #Gd  = Display((1040,410)) 
 iHunt = []
 db = False
@@ -19,20 +19,20 @@ def hunt(imgx,typ ,db):
     xtyp = typ
     typex = {
                  #    lim   limh    ms     mx      dz   
-             'wt' : [130.0,150.0,  500,    4000,   40],    
-             'h2o': [ 60.0, 80.0,  200,    1500,   30],
-             'fat': [  9.0, 15.0,  300,    2500,   40]       
+             'wt' : [130.0,150.0,  500,    4000,   60],    
+             'h2o': [ 60.0, 80.0,  300,    1500,   35],
+             'fat': [  9.0, 15.0,  500,    3000,   45]   #300      
             }
    
     exlist = {
             'wt' :  [2,  8  ],
             'h2o' : [2,  8   ],
-            'fat' : [2,  8  ]
+            'fat' : [2,  7  ]
               }                             #  200 5 600  3000   works h20
     txlist = {
             'wt' :  [ 160, 140   ],
             'h2o' : [ 127, 140   ],  #160, 140, 205 ],
-            'fat' : [ 160  ,140 ]
+            'fat' : [ 160, 140 ]
              }
     lim  =  typex[typ][0]    #limt[0]
     limh =  typex[typ][1]
@@ -47,7 +47,7 @@ def hunt(imgx,typ ,db):
         for tx in txlist[typ]:
             #img = imgy.binarize(tx).invert()
             #img = imgy.erode(iex)
-            img = erode(imgy,iex)
+            img =  imgy.copy()
             cvs(db,img)
             hcnt = hcnt + 1
             # n is the pattern, rmx the max size, rms min size

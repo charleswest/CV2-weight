@@ -20,7 +20,7 @@ db = False
 #tfile = 'F:\\ScTest\\TX\\wtDataTst.txt'
 tfile = 'F:\\ScTest\\Tdec30G1.txt'         # F: is write protected on VM
 #tfile = 'ScTest\\T2015Doris.TRB.txt'      #    should work on Git Hub with limited ScTest
-#tfile = 'VM-trb.txt'
+#tfile = 'VM-trb.TRB.txt'
 try:
     trb = open(tfile.replace('txt','TRB.txt'),'w')
 except IOError as e:
