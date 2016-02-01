@@ -96,11 +96,11 @@ def Part(self,img,db):
     fv1 = int(.65 * w )   #.7
     fv2 = int(.5 * fv1)
     x1cut = int(.3 * fv2)
-    x2cut = int(.95*(fv1 + x1cut))
-    
-    dy = .15 * h
+   
+    x2cut = int(.77 * w)
+ 
     fy = int(.65 * h)
-    fyc =   fy           #   cut line for h20 allow some slack
+ 
    #cv2.line(img,(x1,y1),    (x2,y2),   (0,255,0)             ,2) 
     cv2.line(img,(x1cut,0),  (x1cut,h),   (0,0,0)        ,thickness=3)
     cv2.line(img,( 0,fy),    ( w, fy ),   (0,255,0)        ,thickness=3)
@@ -108,19 +108,19 @@ def Part(self,img,db):
 #   ROI = imgC[ y1:y2,     x1:x2   ].copy()
     wt  = img [  0:fy,   x1cut:fv1  ].copy()  #  100  x 300   st at 150   asp = .33
     cv2.line(img,(x2cut,0), (x2cut,h), (255,255,255)     ,thickness=3)
-    dy = .15 * h
-    fat  = img[ 0:fy,    x2cut:w  ].copy()
+ 
+    fat  = img[ 0:fy,     x2cut:w  ].copy()
     h2o =  img[ fy:h,     x1cut:fv2   ].copy()
 
     if db: cvs(db,img )
 
-##    h2o = img.crop((x1cut,fyc), (fv2, img.height)  )
+ 
     
     return([wt,fat,h2o])
   
 if  __name__ == '__main__':
     global db     
-    db = False
+    db = True
     iHunt = []
     fil = "input.png"
     #fil = 'C:\\github\\cvWeight\\Thin.JPG' 

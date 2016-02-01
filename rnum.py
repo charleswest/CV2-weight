@@ -1,10 +1,10 @@
 import numpy as np
 import cv2
 import sys
-from findBlobs import findBlobs
+from findBlobs import findBlobs, stdSize
 from cwUtils import *
 global db 
-Rtype = 'h2o'
+Rtyp = ['wt']
 #Gd  = Display((1040,410)) 
 iHunt = []
 db = False
@@ -14,24 +14,19 @@ xtyp = ''
 
 def hunt(imgx,typ ,db):
     global xtyp
-   # cvs(db,imgx,'debug')
-    #imgy = imgx.adaptiveScale((1040,410))
-    imgy = cv2.resize(imgx, (1040,410))
-    #hue = max(imgy.huePeaks())[0] +15
-    hue = 160
-    if db: print 'max huePeaks', hue 
+    imgy = stdSize(imgx,typ)
     hcnt = 0
     xtyp = typ
     typex = {
-                 #    lim   limh    ms     mx   dz   
-             'wt' : [130.0,150.0,  500,  3500,   60],    
-             'h2o': [ 60.0, 80.0,  1900,  10000,  80],
-             'fat': [  9.0, 15.0,  1000,   8000,  90]       
+                 #    lim   limh    ms     mx      dz   
+             'wt' : [130.0,150.0,  500,    4000,   40],    
+             'h2o': [ 60.0, 80.0,  200,    1500,   30],
+             'fat': [  9.0, 15.0,  300,    2500,   40]       
             }
    
     exlist = {
-            'wt' :  [8,  2  ],
-            'h2o' : [0,  2   ],
+            'wt' :  [2,  8  ],
+            'h2o' : [2,  8   ],
             'fat' : [2,  8  ]
               }                             #  200 5 600  3000   works h20
     txlist = {
@@ -79,7 +74,7 @@ def hunt(imgx,typ ,db):
     return(hunt2(imgx,typ,hcnt))
 def hunt2(imgx,typ,hcnt):
 #    imgy = imgx.adaptiveScale((1040,410))
-    imgy = cv2.resize(imgx, (1040,410))
+    imgy = imgx  #cv2.resize(imgx, (1040,410))
     img = imgy
     if db: cvs(db,img,'hunt 2',0)
     
@@ -98,7 +93,7 @@ def hunt2(imgx,typ,hcnt):
     txlist = {
             'wt' :  [ 160, 140   ],
             'h2o' : [ 127, 160, 140   ],  #160, 140, 205 ],
-            'fat' : [ 187, 160, 205, 140   ]
+            'fat' : [ 127, 160, 205, 140   ]
              }
     lim  =  typex[typ][0]    #limt[0]
     limh =  typex[typ][1]
@@ -135,7 +130,7 @@ def hunt2(imgx,typ,hcnt):
              
     print '>>>>><<<<<<<<<>>>>hunt2 ' ,typ, ' failed'
     return(0)
-def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
+def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
      
     '''
     analyse the img and pass a likely set of features to qnumb for
@@ -148,7 +143,7 @@ def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
     print '-----rdNumber   tval',tval,' ex',ex,'ms', ms, 'mxsize', mx 
     #  img.clearLayers()
     #cvs(db,img,'fs input')   #img.save(Gd)
-    fs = findBlobs(img, ms, mx , db,tval=tval )
+    fs = findBlobs(img, ms, mx ,ex, db,tval=tval )
     if not fs:
         if db: print ' no features found'
         cvs(db,img)
@@ -200,23 +195,24 @@ def rdNumber(img, tval=160, ex=1, ms=1.0,mx=3, dz = 60):
             #cpause('detail',Gd)
             #if 'p' in numb: break
             fz = x
-        
-        
-        
         numb.append(qnumb(tgrp,img,xd1))
         print 'last numb', numb
-        tpat = numb                  # filter out the P junk
+        tpat = numb 
+        if  all(i == 'p' for i in tpat):
+             return([0,0,0,0],rmx,rmn)     #    nfg return True zero
+        
+                         # filter out the P junk
         #if db: cpause(['end  1 rd',tpat],Gd)
         if len(tpat)>3:
             while tpat[-1] == 'p':
                 tpat.pop()
+               
             while( tpat[0] == 'p'):
                 tpat.pop(0)
       #  if db: cpause(['end rd',tpat],Gd)
         if 'p' in tpat:
             return([0,0,0,0],rmx,rmn)     #    nfg return True zero
-        else:
-             
+        else:             
             return(tpat,rmx,rmn) # maybe good numeric value
        
          
@@ -230,7 +226,7 @@ def qnumb(grp,img,xd):      #   what number does this group encode??
     returns [ number , flag]   flag is True for good number 
     '''
     global Gd
-    img = cv2.resize(img, (1040,410))
+    #img = stdSize(img,xtyp)  #cv2.resize(img, (1040,410))
     if not len(grp) > 0:
         if db: ( 'zero len group. -- quitting')
         return(0)
@@ -293,9 +289,9 @@ def qnumb(grp,img,xd):      #   what number does this group encode??
           #  'p' in  pattern indicates problems
           #  ptrn 110 and xd < 100 also problems?
     tpat = qptrn(ptrn)
-    if  ptrn == 110 :
-        if db: print '<<<<<<<<<< ??? problem pattern 110 xd is  -', xd
-        if xd < 100: return 'p'
+##    if  ptrn == 110 :
+##        if db: print '<<<<<<<<<< ??? problem pattern 110 xd is  -', xd
+##       # if xd < 100: return 'p'
     return tpat
 
 
@@ -332,11 +328,14 @@ if  __name__ == '__main__':
     print ' rnum  module regression Test'
     db = True
  #  Gd  = Display((1040,410))
-    for tst in ['fat']:      #['fat','wt', 'h2o']; 
+    for tst in Rtyp:   #[ 'wt', 'h2o']:   #['fat']:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
        
         #cvs(db,img )
-        #cpause('test image',Gd)
+        if db:
+            cvs(db,img,t=0)
+            h,w = img.shape[:2]   #   h = rows,  w = cols
+            print 'h {} w{}'.format(h,w)
         wt  = hunt(img,tst,db )     
         print  'result  is', wt 
         print 'iHunt',iHunt

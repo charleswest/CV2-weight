@@ -18,8 +18,8 @@ global db
 db = False
 #tfile = 'F:\\ScTest\\Qtest.txt'
 #tfile = 'F:\\ScTest\\TX\\wtDataTst.txt'
-tfile = 'F:\\ScTest\\Tdec30G1.txt'   # F: is write protected on VM
-#tfile = 'ScTest\\T2015Doris.txt'      #    should work on Git Hub with limited ScTest
+tfile = 'F:\\ScTest\\Tdec30G1.txt'         # F: is write protected on VM
+#tfile = 'ScTest\\T2015Doris.TRB.txt'      #    should work on Git Hub with limited ScTest
 #tfile = 'VM-trb.txt'
 try:
     trb = open(tfile.replace('txt','TRB.txt'),'w')
