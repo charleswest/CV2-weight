@@ -31,17 +31,22 @@ def Cropx(db, img):
     ret,thresh = cv2.threshold(imgx,127,255,0)
 
     im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-    for cnt in contours:
-        if cv2.contourArea(cnt) > 100000:
-            x,y,w,h = cv2.boundingRect(cnt)
-            #cv2.rectangle(img,(x,y),(x+w,y+h),YELLOW,5)
-            print 'xy### wh', x , y, w, h , cv2.contourArea(cnt)
-            img3c = img[ y-3:y+h+3 ,x:x+w ].copy()
-            cv2.imwrite('img3c.png',img3c)
-            cvs(db,img3c)
-            break
-       
+    if contours:
+        for cnt in contours:
+            #print 'found', cv2.contourArea(cnt)
+            if cv2.contourArea(cnt) > 100000:
+                x,y,w,h = cv2.boundingRect(cnt)
+                if db: cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,255),5)
+                print 'xy### wh', x , y, w, h , cv2.contourArea(cnt)
+                if y > 3:
+                    img3c = img[ y-3:y+h+3 ,x:x+w ].copy()
+                else:
+                    img3c = img[ y:y+h+3 ,x:x+w ].copy()
+                cv2.imwrite('img3c.png',img3c)
+                cvs(db,img3c)
+                break
+    else:
+        print 'no contours'
     if db: cvs(db,img3c,t=1000)
     angle = tstInvert(db,img3c)  # cv2 img
     

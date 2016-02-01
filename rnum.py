@@ -4,7 +4,7 @@ import sys
 from findBlobs import findBlobs, stdSize
 from cwUtils import *
 global db 
-Rtyp = ['h2o']
+Rtyp = ['wt']
 #Gd  = Display((1040,410)) 
 iHunt = []
 db = False
@@ -19,20 +19,20 @@ def hunt(imgx,typ ,db):
     xtyp = typ
     typex = {
                  #    lim   limh    ms     mx      dz   
-             'wt' : [130.0,150.0,  500,    4000,   60],    
+             'wt' : [130.0,150.0,  450,    4000,   60],    
              'h2o': [ 60.0, 80.0,  300,    1500,   35],
              'fat': [  9.0, 15.0,  500,    3000,   45]   #300      
             }
    
     exlist = {
-            'wt' :  [8, 2  ],
+            'wt' :  [8, 2, 11  ],
             'h2o' : [2,  8   ],
-            'fat' : [2,  7  ]
+            'fat' : [7,  2 ]
               }                             #  200 5 600  3000   works h20
     txlist = {
             'wt' :  [ 160, 140   ],
-            'h2o' : [ 127   ],  #160, 140, 205 ],
-            'fat' : [ 160 ]
+            'h2o' : [ 127 ,190, 160, 140 ],  #160, 140, 205 ],
+            'fat' : [ 160, 190, 205 ]
              }
     lim  =  typex[typ][0]    #limt[0]
     limh =  typex[typ][1]
