@@ -25,14 +25,14 @@ def hunt(imgx,typ ,db):
             }
    
     exlist = {
-            'wt' :  [2,  8  ],
+            'wt' :  [8, 2  ],
             'h2o' : [2,  8   ],
             'fat' : [2,  7  ]
               }                             #  200 5 600  3000   works h20
     txlist = {
             'wt' :  [ 160, 140   ],
-            'h2o' : [ 127, 140   ],  #160, 140, 205 ],
-            'fat' : [ 160, 140 ]
+            'h2o' : [ 127   ],  #160, 140, 205 ],
+            'fat' : [ 160 ]
              }
     lim  =  typex[typ][0]    #limt[0]
     limh =  typex[typ][1]
@@ -72,64 +72,6 @@ def hunt(imgx,typ ,db):
     print '>>>>>>>>>>>>>>>>>hunt  ' ,typ, 'failed'
     return (0)                          #  eliminate hunt2 for now
     return(hunt2(imgx,typ,hcnt))
-def hunt2(imgx,typ,hcnt):
-#    imgy = imgx.adaptiveScale((1040,410))
-    imgy = imgx  #cv2.resize(imgx, (1040,410))
-    img = imgy
-    if db: cvs(db,img,'hunt 2',0)
-    
-    xtyp = typ
-    typex = {
-     #    lim   limh    ms    mx    dz   
- 'wt' : [130.0,150.0,  200,  4000,  60],    
- 'h2o': [ 60.0, 80.0,  150,  4000,  60],
- 'fat': [  9.0, 15.0,  100,  2000,  50]     # 400    
-            }
-    exlist = {
-            'wt' :  [12, 14,     ],
-            'h2o' : [2,  8, 12  ],
-            'fat' : [12,  10   ]
-              }                             #  200 5 600  3000   works h20
-    txlist = {
-            'wt' :  [ 160, 140   ],
-            'h2o' : [ 127, 160, 140   ],  #160, 140, 205 ],
-            'fat' : [ 127, 160, 205, 140   ]
-             }
-    lim  =  typex[typ][0]    #limt[0]
-    limh =  typex[typ][1]
-    ms =    typex[typ][2]
-    mx =    typex[typ][3]
-    dz =    typex[typ][4]
-   
-    cvs(db,img)
-    for iex in exlist[typ]:
-        if db: print '-----rdNumber h2   ms', ms, ' mx',  mx 
-        for tx in txlist[typ]:
-            hcnt = hcnt + 1
-            img = erode(imgy,iex)
-            cvs(db,img)
-            #if db: cpause( ['Erode image',iex],Gd)
-            # n is the pattern, rmx the max size, rms min size
-            n,rmx,rms = rdNumber(img,ex=iex, ms=ms   ,dz=dz , mx = mx ,tval=tx )
-          
-            if db: print '       Hunt 1 n ', hcnt,  n     #  exit here
-            nn = 0; j = -1
-            n.reverse()
-            #nn = 100 * n[1] + 10 * n[2] + n[3] + n[4]/10.0
-            if db :
-                print 'n' ,n
-                cpause(['nreverse',n],Gd)
-            for j, xin in  enumerate(n):
-                nn = nn + xin * 10**(j-1)
-            if (nn > lim) and nn < limh:
-                iHunt.append((typ, hcnt, iex, tx, ms,rms, mx,rmx,  nn ))
-                print 'hunt rtn' ,nn
-                return(nn)
-            
-                
-             
-    print '>>>>><<<<<<<<<>>>>hunt2 ' ,typ, ' failed'
-    return(0)
 def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
      
     '''
