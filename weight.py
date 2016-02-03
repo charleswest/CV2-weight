@@ -33,7 +33,7 @@ class Scale:
     
 if  __name__ == '__main__':
     global db,tmpf
-    db =False
+    db = True
     filename = r"C:\Users\charles\Desktop\ScTest\T2015Doris\20150208_084551.jpg"
     filename = "input.png"
     print 'weight.py', filename

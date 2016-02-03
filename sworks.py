@@ -25,18 +25,21 @@ def Cropx(db, img):
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
     #  find the contour of the mask which needs to be greyscale
     #imgx = cv2.cvtColor(mask,cv2.COLOR_HSV2BGR_FULL )
-    cvs(db,mask)
+    #cvs(db,mask)
     cv2.imwrite('tempgray.png',mask)
     imgx = cv2.imread('tempgray.png',0)
     ret,thresh = cv2.threshold(imgx,127,255,0)
 
     im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    imdb = img.copy()
     if contours:
         for cnt in contours:
             #print 'found', cv2.contourArea(cnt)
             if cv2.contourArea(cnt) > 100000:
                 x,y,w,h = cv2.boundingRect(cnt)
-                if db: cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,255),5)
+                if db:                   
+                    cv2.rectangle(imdb,(x,y),(x+w,y+h),(0,255,255),5)
+                    cvs(db,imdb)
                 print 'xy### wh', x , y, w, h , cv2.contourArea(cnt)
                 if y > 3:
                     img3c = img[ y-3:y+h+3 ,x:x+w ].copy()

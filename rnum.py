@@ -270,6 +270,7 @@ if  __name__ == '__main__':
     print ' rnum  module regression Test'
     db = True
  #  Gd  = Display((1040,410))
+    Rtyp = ['h2o', 'fat', 'h20']
     for tst in Rtyp:   #[ 'wt', 'h2o']:   #['fat']:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
        

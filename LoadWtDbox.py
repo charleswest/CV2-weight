@@ -1,12 +1,13 @@
 """
 This program loads the last image in the  Auto Upload directory
-and outputs the weight from the image to the R project wtData
+and outputs the weight from the image to the R project wtData in a VM
  
 '"""
 import os
 import glob
 import time
 from datetime import datetime
+from cwUtils import cvs, cvd
 
 print __doc__
 
@@ -35,14 +36,14 @@ while (rawchar == 'c'):
     #td = t[3:10]
     print 'tnow {}  t  {}'.format( tnow,t)
     if td == tnow:
-        from weight import Scale,Gd
-        from rnum import cpause
-        
-        sx = Scale(f)      #    the main function of Weight that returns the number
+        from weight import Scale
+    #    from rnum import cpause
+        db = True
+        sx = Scale(f,db)      #    the main function of Weight that returns the number
                            # sx is a tuple of w, fat, water
         print 'Date and Time' , t, 'weight', sx.nwt
     #   note the raw string below 
-        f  = open( r'C:\Users\charles\Data\Prod\wtdata\aaScale.r', 'a')
+        f  = open( r'C:\Users\charles\Desktop\wtdata\0aaScale.r', 'a')
         print  "updd(", t , sx.nwt , ")"
         st = str(t)
         sw = str(sx.nwt) +', '+ str(sx.nfat )+ ', ' + str(sx.nh2o)
@@ -52,9 +53,9 @@ while (rawchar == 'c'):
         f.write(s)
         f.close()
 ##        sx.cropped.save(Gd)
-        cpause()
+    #    cpause()
         
-        Gd.quit()
+        cvd()
         rawchar = 'Q'
     else:
         print "Not today's picture"
