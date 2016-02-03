@@ -37,14 +37,16 @@ while (rawchar == 'c'):
     print 'tnow {}  t  {}'.format( tnow,t)
     if td == tnow:
         from weight import Scale
+        import cv2
     #    from rnum import cpause
-        db = True
+        db = False
         sx = Scale(f,db)      #    the main function of Weight that returns the number
                            # sx is a tuple of w, fat, water
         print 'Date and Time' , t, 'weight', sx.nwt
     #   note the raw string below 
         f  = open( r'C:\Users\charles\Desktop\wtdata\0aaScale.r', 'a')
-        print  "updd(", t , sx.nwt , ")"
+        
+        print 'updd( {}, {},  {}, {} )'.format(t,sx.nwt,sx.nfat,sx.nh2o)
         st = str(t)
         sw = str(sx.nwt) +', '+ str(sx.nfat )+ ', ' + str(sx.nh2o)
         s = "\nupdd('" + st + "'," + sw + ")"
@@ -54,12 +56,12 @@ while (rawchar == 'c'):
         f.close()
 ##        sx.cropped.save(Gd)
     #    cpause()
-        
+        rkey = cv2.waitKey(0)
         cvd()
         rawchar = 'Q'
     else:
         print "Not today's picture"
-        rawchar = raw_input('Enter c to continue else Quit')
+        rawchar = raw_input('Enter c to continue else Quit ')
 
  
  
