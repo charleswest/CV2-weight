@@ -65,6 +65,7 @@ def hunt(imgx,typ ,db):
             if (nn > lim) and nn < limh:
                 iHunt.append((typ, hcnt, iex, tx, ms,rms, mx,rmx,  nn ))
                 print 'hunt rtn' ,nn
+                cvs(db,img,typ)
                 return(nn)
             
                 
@@ -268,9 +269,9 @@ import time
 
 if  __name__ == '__main__':
     print ' rnum  module regression Test'
-    db = True
+    db = False
  #  Gd  = Display((1040,410))
-    Rtyp = ['h2o', 'fat', 'h20']
+    Rtyp = ['wt', 'fat', 'h2o']
     for tst in Rtyp:   #[ 'wt', 'h2o']:   #['fat']:      #['fat','wt', 'h2o']; 
         img = cv2.imread(tst +'Test.png') 
        

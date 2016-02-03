@@ -28,12 +28,12 @@ class Scale:
         self.nwt =  hunt(self.wt,'wt',db)            
         self.nfat = hunt(self.fat,'fat',db)            
         self.nh2o = hunt(self.h2o,'h2o',db)
-    
+      
         return(None)
     
 if  __name__ == '__main__':
     global db,tmpf
-    db = True
+    db = False
     filename = r"C:\Users\charles\Desktop\ScTest\T2015Doris\20150208_084551.jpg"
     filename = "input.png"
     print 'weight.py', filename

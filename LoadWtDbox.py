@@ -54,8 +54,7 @@ while (rawchar == 'c'):
         s = "\ninfo()"
         f.write(s)
         f.close()
-##        sx.cropped.save(Gd)
-    #    cpause()
+
         rkey = cv2.waitKey(0)
         cvd()
         rawchar = 'Q'
