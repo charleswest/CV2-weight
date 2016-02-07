@@ -26,9 +26,9 @@ def Cropx(db, img):
     #  find the contour of the mask which needs to be greyscale
     #imgx = cv2.cvtColor(mask,cv2.COLOR_HSV2BGR_FULL )
     #cvs(db,mask)
-    cv2.imwrite('tempgray.png',mask)
-    imgx = cv2.imread('tempgray.png',0)
-    ret,thresh = cv2.threshold(imgx,127,255,0)
+##    cv2.imwrite('tempgray.png',mask)
+##    imgx = cv2.imread('tempgray.png',0)
+    ret,thresh = cv2.threshold(mask,127,255,0)
 
     im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     imdb = img.copy()
@@ -70,24 +70,28 @@ def angle_cos(p0, p1, p2):
 def tstInvert(db,img):
   ' inverted images have a horizontal line at .3 instead of .7 '
   height, width = img.shape[:2]
-  stuff = findLines(img,300,30)
+  lines = findLines(img,200,10)#(img,300,30)    
   v7 =  0 ; v3 = 0; maxA = 0
-  for line in stuff:
-      for x1,y1,x2,y2  in line :
-#         print 'line' ,x1, y1, x2, y2
-         angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
-         if db:
-             print 'Angle for skew ', angle, maxA,
-             cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
+  if lines: 
+      for line in lines:
+          for x1,y1,x2,y2  in line :
+    #         print 'line' ,x1, y1, x2, y2
+             angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
+             if db:
+                 print 'Angle for skew ', angle, maxA,
+                 cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
+                 
              
-         
-         if abs(angle) > abs(maxA) and abs(angle) < 3:
-             maxA = angle
-             
-         yh = round( y2 / float(height),1 )  # % dist on y axis
-         if db: print 'yh is ' , yh
-         if   yh == 0.3: v3 = v3 + 1
-         elif yh == 0.7: v7 = v7 + 1
+             if abs(angle) > abs(maxA) and abs(angle) < 3:
+                 maxA = angle
+                 
+             yh = round( y2 / float(height),1 )  # % dist on y axis
+             if db: print 'yh is ' , yh
+             if   yh == 0.3: v3 = v3 + 1
+             elif yh == 0.7: v7 = v7 + 1
+  else:
+      return(180)
+  
   if db:
       print 'V3 {} V7 {} maxA {} lines found {} '.format(v3, v7, maxA, len(stuff))
       cvs(db,img)
