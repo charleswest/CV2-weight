@@ -72,7 +72,7 @@ def tstInvert(db,img):
   height, width = img.shape[:2]
   lines = findLines(img,200,10)#(img,300,30)    
   v7 =  0 ; v3 = 0; maxA = 0
-  if lines: 
+  if lines.any: 
       for line in lines:
           for x1,y1,x2,y2  in line :
     #         print 'line' ,x1, y1, x2, y2
@@ -93,7 +93,7 @@ def tstInvert(db,img):
       return(180)
   
   if db:
-      print 'V3 {} V7 {} maxA {} lines found {} '.format(v3, v7, maxA, len(stuff))
+      print 'V3 {} V7 {} maxA {} lines found {} '.format(v3, v7, maxA, len(lines))
       cvs(db,img)
   
   if( v3 > v7):
