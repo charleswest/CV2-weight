@@ -19,7 +19,7 @@ db = False
 tfile = r'C:\Users\charles\Desktop\ScTest\Qtest.txt'
 tfile = r'C:\Users\charles\Desktop\ScTest\wtDataTst.txt'
 tfile = r'C:\Users\charles\Desktop\ScTest\Tdec30G1.txt'   #  large scTest no on Github
-tfile = 'ScTest\\T2015Doris.TRB.txt'      #    should work on Git Hub with limited ScTest
+#tfile = 'ScTest\\T2015Doris.TRB.txt'      #    should work on Git Hub with limited ScTest
 #      only one tfile will run 
 try:
     trb = open(tfile.replace('txt','TRB.txt'),'w')
