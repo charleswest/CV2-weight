@@ -22,12 +22,11 @@ def stdSize(imgx,typ):
 def  findBlobs(imx,ms,mx,erd,db,tval=127):
   
     Erd = erd
-    Drd = int(Erd/2) 
-    print 'This is find blobs  1.0 ms {} mx {} erd {} drd {}'.format( ms, mx , Erd ,Drd)
+    print 'This is find blobs  1.0 ms {} mx {}  db {}'.format( ms, mx , db)
     imgray = cv2.cvtColor(imx,cv2.COLOR_BGR2GRAY)
     ret,thresh = cv2.threshold(imgray,tval,255,0)
     thresh = erode(thresh,Erd)
-    thresh = dilate(thresh,Drd)
+    thresh = dilate(thresh,1)
     #print 'db findBlobs' , db
     cvs(db,thresh)
     im3,cnt, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -42,10 +41,13 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
        
        cnt_len = cv2.arcLength(con, True)                          
        cntp = cv2.approxPolyDP(con, 0.02*cnt_len, True)
+##        and cv2.contourArea(cntp) > ms \
+##        and cv2.contourArea(cntp) < mx \
+##        and cv2.isContourConvex(cntp) \
  #      print len(cntp)  #    look for suitable contours
        x,y,w,h = cv2.boundingRect(con)
        asp = abs(  w - h  )
-       if db: print 'abs|w-h| {}  w {} h {} '.format(asp,w,h)
+       if db: print 'asp {}  w {} h {} '.format(asp,w,h)
        if len(cntp) > 3  \
           and asp > .1 \
           and  area > ms and area < mx:
@@ -59,10 +61,10 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
     return rvl
    
 if __name__ == '__main__':
-    db = False
+    db = True
     print 'funny ', db
  
-    tst = 'fat'
+    tst = 'wt'
     imgx = cv2.imread(tst +'Test.png') 
     #imgx = cv2.imread(fn)
     img = stdSize(imgx,tst)   #cv2.resize(imgx, (1040,410))
@@ -70,14 +72,14 @@ if __name__ == '__main__':
     h,w = img.shape[:2]  
  
     #cvs(db,img)
-    ms =  325;    mx = 10000;  erd =12; tx=160
+    ms =  325;    mx = 10000;  erd =10; tx=160
     cnt =  findBlobs( img,ms,mx,erd,db,tx) # will modify img to show cnt
     cnt  =   sorted(cnt, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
     print ' input is {} width {} height {} ms {} mx {} tval {}   '\
           .format(tst,w, h,ms,mx,tx)
     for f in cnt:
         cv2.drawContours(img,[f],0,(255,0,0),2)
-        print 'contour array f[0] ',  f[0] ,
+        print 'array f ',  f[0] ,
         x,y,w,h = cv2.boundingRect(f)
         a =  cv2.contourArea(f)
         asp = round(abs( 1.00 - float(w)/float(h) ),2)
