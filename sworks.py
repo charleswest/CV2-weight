@@ -23,11 +23,7 @@ def Cropx(db, img):
     upper_blue = np.array( [255,255,255])   #np.array([130,255,255])
     # Threshold the HSV image to get only blue colors
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
-    #  find the contour of the mask which needs to be greyscale
-    #imgx = cv2.cvtColor(mask,cv2.COLOR_HSV2BGR_FULL )
-    #cvs(db,mask)
-##    cv2.imwrite('tempgray.png',mask)
-##    imgx = cv2.imread('tempgray.png',0)
+
     ret,thresh = cv2.threshold(mask,127,255,0)
 
     im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -52,56 +48,38 @@ def Cropx(db, img):
         print 'no contours'
     if db: cvs(db,img3c,t=1000)
     angle = tstInvert(db,img3c)  # cv2 img
-    
-  #  scv_image = scv_image.rotate(angle,fixed=False)  
-    cv_image = rotate(img3c,angle)         # remove skew or inversion
+
+
+    cv_image = rotate(img3c,angle)         #  inversion
     cvs(db,cv_image,t=0)
     cv2.imwrite('cropTest.png',cv_image)   #  save intermediate results
     return(cv_image)
 
-def angle_cos(p0, p1, p2):
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        d1, d2 = p0-p1, p2-p1
-        return abs( np.dot(d1, d2) / np.sqrt( np.dot(d1, d1)*np.dot(d2, d2) ) )     
-    
-
-
 def tstInvert(db,img):
-  ' inverted images have a horizontal line at .3 instead of .7 '
-  height, width = img.shape[:2]
-  lines = findLines(img,200,10)#(img,300,30)    
-  v7 =  0 ; v3 = 0; maxA = 0
-  if lines.any: 
-      for line in lines:
-          for x1,y1,x2,y2  in line :
-    #         print 'line' ,x1, y1, x2, y2
-             angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   # angle in deg
-             if db:
-                 print 'Angle for skew ', angle, maxA,
-                 cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)
-                 
-             
-             if abs(angle) > abs(maxA) and abs(angle) < 3:
-                 maxA = angle
-                 
-             yh = round( y2 / float(height),1 )  # % dist on y axis
-             if db: print 'yh is ' , yh
-             if   yh == 0.3: v3 = v3 + 1
-             elif yh == 0.7: v7 = v7 + 1
-  else:
-      return(180)
-  
-  if db:
-      print 'V3 {} V7 {} maxA {} lines found {} '.format(v3, v7, maxA, len(lines))
-      cvs(db,img)
-  
-  if( v3 > v7):
-      return(maxA + 180)
-  else:
-      if db: print ' remove skew', maxA
-      return( maxA )  #  largest < 2 deg
-      #return(0)        # try with skew
+    ' inverted images have a horizontal line at .3 instead of .7 '
+    height, width = img.shape[:2]
+    lines = findLines(img,300,30)#(img,300,30)    
+    v7 =  0 ; v3 = 0;   # maxA = 0 ; skew = []; mxlen =0
+    if not lines.any: return(180) 
+    for line in lines:
+        for x1,y1,x2,y2  in line :
+            ##    angle =  np.arctan2( y2-y1 ,  x2-x1 ) * 180 /  np.pi   #  in deg
+            yh = round( y2 / float(height),1 )  # % dist on y axis
+            #if db: print 'yh is ' , yh
+            if   yh == 0.3: v3 = v3 + 1
+            elif yh == 0.7: v7 = v7 + 1
+        # end for in line
+    #end for line in lines    
+ 
+    if db:
+        print 'V3 {} V7 {}   lines found {} '.format(v3, v7,  len(lines))
+        cvs(db,img)
+
+    if( v3 > v7):
+        return( 180)
+    else:
+        return(0 )  #  largest < 2 deg
+    #return(0)        # try with s
 
 def Part(self,img,db):
     h,w = img.shape[:2] 

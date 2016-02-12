@@ -17,7 +17,7 @@ def stdSize(imgx,typ):
     print 'stdSize height {} typ {} nw {}'.format( nh, typ, nw)
     imgy =  cv2.resize(imgx, ( nw, int (nh) )  )    # maintain aspect ratio
     
-    return imgy
+    return imgy.copy()
 
 def  findBlobs(imx,ms,mx,erd,db,tval=127):
   
@@ -30,6 +30,7 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
     thresh = dilate(thresh,Drd)
     #print 'db findBlobs' , db
     cvs(db,thresh)
+    cmask = thresh.copy()
     im3,cnt, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     #  note lamda is expression for leftmost extreme of the contour
@@ -56,7 +57,7 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
           cv2.drawContours(imx,[con], 0, (0,0,255), 2)       #  red
           
        if db:cvs(db,imx,t=0)
-    return rvl
+    return (rvl,cmask)
    
 if __name__ == '__main__':
     db = False
@@ -71,17 +72,22 @@ if __name__ == '__main__':
  
     #cvs(db,img)
     ms =  325;    mx = 10000;  erd =12; tx=160
-    cnt =  findBlobs( img,ms,mx,erd,db,tx) # will modify img to show cnt
+    (cnt,cmask) =  findBlobs( img,ms,mx,erd,db,tx) # will modify img to show cnt
     cnt  =   sorted(cnt, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
     print ' input is {} width {} height {} ms {} mx {} tval {}   '\
           .format(tst,w, h,ms,mx,tx)
-    for f in cnt:
-        cv2.drawContours(img,[f],0,(255,0,0),2)
-        print 'contour array f[0] ',  f[0] ,
-        x,y,w,h = cv2.boundingRect(f)
-        a =  cv2.contourArea(f)
-        asp = round(abs( 1.00 - float(w)/float(h) ),2)
-        print 'x {}  y {}\tw {}\th {}\ta {}\tasp {} '.format( x, y , w, h,a,asp)
+
+##    minx = min(cnt,key= lambda x:x[0])
+##    print 'min x {}'.format(minx)
+    for i, f in enumerate (cnt):
+        print '{} cnt {}'.format(i,f)
+##        cv2.drawContours(img,[f],0,(255,0,0),2)
+##        print 'contour array f[0] ',  f[0] ,
+##        x,y,w,h = cv2.boundingRect(f)
+##        a =  cv2.contourArea(f)
+##        asp = round(abs( 1.00 - float(w)/float(h) ),2)
+##        print 'x {}  y {}\tw {}\th {}\ta {}\tasp {} '.format( x, y , w, h,a,asp)
+    cvs(1,cmask)    
     cvs(1,img,t=0)
  
     cvd()
