@@ -23,7 +23,7 @@ def  boundsBlob(grp):
 #     [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
     x,y = grp[0][0][0]
     mxy = y
-    print x,y
+    #print x,y
     for  cn in grp:
         for blb in cn:
                 #print y,
@@ -64,7 +64,7 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
  #      print len(cntp)  #    look for suitable contours
        x,y,w,h = cv2.boundingRect(con)
        asp = abs(  w - h  )
-       if db: print 'abs|w-h| {}  w {} h {} '.format(asp,w,h)
+       #if db: print 'abs|w-h| {}  w {} h {} '.format(asp,w,h)
        if (  len(cntp) > 3                   # at least 4  
              and  asp > .1                      # ie not round or square
              and  area > ms

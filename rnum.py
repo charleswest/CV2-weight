@@ -154,7 +154,7 @@ def tnumb(grp,img,mask):
     cvs(db,img)
     zh,zw = img.shape[:2] 
  #    print ' w x h  db ', w , h, db 
-    print 'rectangle tl{} br{}  img w{}  h{}'.format(tl,br, zw, zh)   
+    if db: print 'rectangle tl{} br{}  img w{}  h{}'.format(tl,br, zw, zh)   
 
 def qnumb(grp):      #   what number does this group encode??
     '''
