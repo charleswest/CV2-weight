@@ -18,7 +18,25 @@ def stdSize(imgx,typ):
     imgy =  cv2.resize(imgx, ( nw, int (nh) )  )    # maintain aspect ratio
     
     return imgy.copy()
-
+def  boundsBlob(grp):
+    # x, y, w, h    given the following x,y pairs
+#     [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+    x,y = grp[0][0][0]
+    mxy = y
+    print x,y
+    for  cn in grp:
+        for blb in cn:
+                #print y,
+                cx,cy  = blb[0] 
+                 
+                if cx  < x: x = cx                #  find least x
+                if cx  > x: w = cx - x
+                
+                if cy < y: y = cy                #  find max y
+                if cy > mxy: mxy = cy
+                #print 'y and mxy', y,mxy
+    h = mxy - y
+    return( x,y,w,h)
 def  findBlobs(imx,ms,mx,erd,db,tval=127):
   
     Erd = erd
@@ -47,9 +65,10 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
        x,y,w,h = cv2.boundingRect(con)
        asp = abs(  w - h  )
        if db: print 'abs|w-h| {}  w {} h {} '.format(asp,w,h)
-       if len(cntp) > 3  \
-          and asp > .1 \
-          and  area > ms and area < mx:
+       if (  len(cntp) > 3                   # at least 4  
+             and  asp > .1                      # ie not round or square
+             and  area > ms
+             and  area < mx  ):          # note (   ...   ) for implied continuation
             rvl.append(con)
             cv2.drawContours(imx,[con], 0, (0,255,255), 2)    # yellow
         
@@ -61,8 +80,6 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
    
 if __name__ == '__main__':
     db = False
-    print 'funny ', db
- 
     tst = 'fat'
     imgx = cv2.imread(tst +'Test.png') 
     #imgx = cv2.imread(fn)
@@ -76,13 +93,13 @@ if __name__ == '__main__':
     cnt  =   sorted(cnt, key = lambda cnt: tuple(cnt[cnt[:,:,0].argmin()][0]))
     print ' input is {} width {} height {} ms {} mx {} tval {}   '\
           .format(tst,w, h,ms,mx,tx)
-
-##    minx = min(cnt,key= lambda x:x[0])
-##    print 'min x {}'.format(minx)
+    x,y,w,h = boundsBlob(cnt)
+    print (x,y,w,h)
+    tl = (x-10,y-10) ; br = ( x  +  w+10, y+ h+10)       #  10 for more room
+    cv2.rectangle(img,(tl),(br),(255,255,255),5)       # white rectangle
     for i, f in enumerate (cnt):
-        print '{} cnt {}'.format(i,f)
-##        cv2.drawContours(img,[f],0,(255,0,0),2)
-##        print 'contour array f[0] ',  f[0] ,
+        
+        cv2.drawContours(img,[f],0,(255,0,0),2)
 ##        x,y,w,h = cv2.boundingRect(f)
 ##        a =  cv2.contourArea(f)
 ##        asp = round(abs( 1.00 - float(w)/float(h) ),2)
