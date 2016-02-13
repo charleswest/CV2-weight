@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import sys
-from findBlobs import findBlobs, stdSize
+from findBlobs import findBlobs, stdSize ,boundsBlob
 from cwUtils import *
 global db
 ''' Trnum  writes each located digit to a test file for training future
@@ -140,8 +140,8 @@ def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
 def tnumb(grp,img,mask):
     ''' process a possible digit and output a mask to a file '''
     if not len(grp) > 0: return(0)
-    x,y, wg, hg  = evalGrp(grp)
-        
+    x,y, wg, hg  = boundsBlob(grp)
+
     # compute bounds for the possible digit   top left bottom right
     tl = (x-10,y-10) ; br = ( x  +  wg+10, y+ hg+10)       #  10 for more room
     cv2.rectangle(img,(tl),(br),(0,0,0),5)       # black rectangle
@@ -155,20 +155,7 @@ def tnumb(grp,img,mask):
     zh,zw = img.shape[:2] 
  #    print ' w x h  db ', w , h, db 
     print 'rectangle tl{} br{}  img w{}  h{}'.format(tl,br, zw, zh)   
-         
-def evalGrp(grp):        # attributes min and max y
-    x,y,w,h = cv2.boundingRect(grp[0])
-    zbx,zby,zbw,zbh = cv2.boundingRect(grp[-1])
-    wg = zbx +zbw  -  x   #    last largest x value - first x
-    miny=y         
-    maxy=y 
-    for b in grp:      #     obtain min and max values for y                    
-        bx,by,bw,bh = cv2.boundingRect(b)
-        if by < miny:  miny = by
-        if by + bh > maxy: maxy = by + bh
-        hg = maxy - miny  #  now the height
-        y =  miny
-    return (x,y,wg,hg)
+
 def qnumb(grp):      #   what number does this group encode??
     '''
     we count horizontal bars.   The we create an encoding of the four
@@ -184,7 +171,7 @@ def qnumb(grp):      #   what number does this group encode??
         return(0)
     xll =0; xlh=0; xrl=0; xrh = 0    #  pixel counts 
     v=0 ;  h=0;                      #  pixel groups  
-    x, y, wg, hg = evalGrp(grp)
+    x, y, wg, hg = boundsBlob(grp)
     for b in grp:
         bx,by,bw,bh = cv2.boundingRect(b)
         if bh   < 1.1 * bw:
@@ -202,8 +189,8 @@ def qnumb(grp):      #   what number does this group encode??
                 else:
                     xrh = 1                   #                 else high
        
-        if db: print 'p so far is h {} v {} xll {} xlh {} xrl {} xrh {}'\
-                          .format(h,   v,   xll,   xlh,    xrl, xrh)
+        #if db: print( 'p so far is h {} v {} xll {} xlh {} xrl {} xrh {}'
+        #                  .format(h,   v,   xll,   xlh,    xrl, xrh) )
                     
     
 
