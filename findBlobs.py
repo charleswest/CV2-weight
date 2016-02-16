@@ -57,7 +57,7 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
     rvl = []
     for con in scon:
        area = cv2.contourArea(con)
-       if db: print  area,
+       #if db: print  area,
        
        cnt_len = cv2.arcLength(con, True)                          
        cntp = cv2.approxPolyDP(con, 0.02*cnt_len, True)
@@ -75,12 +75,12 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
        else:
           cv2.drawContours(imx,[con], 0, (0,0,255), 2)       #  red
           
-       if db:cvs(db,imx,t=0)
+      #  if db:cvs(db,imx,t=0)
     return (rvl,cmask)
    
 if __name__ == '__main__':
     db = False
-    tst = 'fat'
+    tst = 'wt'
     imgx = cv2.imread(tst +'Test.png') 
     #imgx = cv2.imread(fn)
     img = stdSize(imgx,tst)   #cv2.resize(imgx, (1040,410))
