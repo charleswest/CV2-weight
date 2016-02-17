@@ -13,53 +13,30 @@ def tMatch(im1,typ,db):
     files = glob.glob(path)  
     rtn = ['0','0','0','0','0','0','0']
     for n,f in enumerate(files):                # read templates from Train
-        print 'Tmatch', f[9:-4],        
+        if db: print 'Tmatch', f[9:-4],        
         im2 = cv2.imread(f,0)
         
         w1,  h1  = im1.shape[::-1]   # image
         w2,  h2 =  im2.shape[::-1]   # panel
         if db: print 'image w {} h {} panel w {} h {}'.format(w1,h1,w2,h2)
-        dv = h1-h2
-        dh = (w1-w2)
-            
-        mv =  int (dv/2.0)      # vertical margin
-        mh =  int (dh/2.0)      # horizontal margin
-        if db: print 'dv {} dh {}     mv {}   mh {}  '.format( dv, dh, mv,mh)
-        
-        
-        y1 = max(0,mv);     x1 = max(0,mh);
-        y2 = min(h1,h2);    x2 = min(w1,w2) 
-        om1  =        im1[ y1:y2,   x1:x2] .copy()     #  image crop
-
-        yt1= abs(mv);     yt2 = yt1 +  min( h1,h2)    # set up panel crop
-
-        if mh == 0:
-            xt1= 0 #abs(mh) ;
-            xt2 = xt1 +  min( w1,w2)       
-        elif mh > 0:      #  eg on 2 
-            xt1 = mh
-            xt2 = xt1 + min(w1,w2)
-        elif mh < -15:              # large neg mh on 1
-            xt1= 0 #abs(mh) ;
-            xt2 = xt1 +  min( w1,w2)
+        if  w1-w2 < -30:            
+            yt1 =int(.5*(h2-h1)); yt2 = yt1 + h1  ;  xt1 = 0 ; xt2= w1
+            if db: print 'crop ',yt1, yt2, xt1, xt2
+            om2  =        im2[yt1:yt2, xt1:xt2].copy()    #  panel crop
         else:
-             print ' three here'
-             xt1 = abs(mh)  
-             xt2 = xt1 + min(w1,w2)
-
-            
-        om2  =        im2[yt1:yt2, xt1:xt2].copy()    #  panel crop
-        
+             om2  =  cv2.resize(im2, ( w1, h1 )  )    # panel resize
+      
         if db:
-            print 'display om1 the image x'
-            cvs(1,om1,'x')
-            print ('display om2 the template y1 {} y2 {}  x1 {} x2 {}'
-                         .format(yt1,yt2,xt1,xt2))
+            print 'display im1 the image x'
+            cvs(1,im1,'x')
+            print 'display im2 the panel x'
+            cvs(1,im2,'pp')
+            print ('display om2 the template ')
             cvs(1,om2,'y')
-        w1,  h1  = om1.shape[::-1]   # image
+        w1,  h1  = im1.shape[::-1]   # image
         w2,  h2 =  om2.shape[::-1]   # panel
         if db: print 'om1 w {}, h {}   im2 w {}  h {}'.format(w1, h1,w2, h2)
-        res = cv2.bitwise_and(om1,om2)
+        res = cv2.bitwise_and(im1,om2)
         pxlcnt = np.sum(res) / 255    # count of pixels 
         if db:
             print pxlcnt, 'count of pixels'
@@ -67,9 +44,7 @@ def tMatch(im1,typ,db):
             cvd()
         
         if pxlcnt  > 300 :
-            rtn[n] = '1'
-             
-    
+            rtn[n] = '1'                 
     drtn = ''.join(rtn)
    
     print 'ptrn ', rtn , drtn
@@ -93,26 +68,38 @@ def tMatch(im1,typ,db):
         return 'p'
     
 if __name__ == '__main__':
+    from findBlobs import findBlobs, boundsBlob, stdSize
     typ = 'wt'
-    path = ('C:\\Train\\{}*.png'.format( typ    ) )          #os.getcwd()
+    path = ('C:\\Train\\{}7.png'.format( typ    ) )          #os.getcwd()
     print path        
     files = glob.glob(path)  
-    db = True
-##    fwt = 'wtTest.png'
-##    img = cv2.imread(fwt,0)
-##    cvs(db,img)
-## #   pxls =  tMatch(img,typ,db)    # search for a number
-##    print 'number is',pxls
-    
-    for f in files:                # read templates from Train
-        img = cv2.imread(f,0)
-        h,w = img.shape[:2] 
-        print 'img w h      file    ', w, h ,f
-        pxls =  tMatch(img,typ,db)    # search for a number
-        print 'number is',pxls
+    db = 1
+    fwt =  typ + 'Test.png'
+    imgx = cv2.imread(fwt,0)
+    img = stdSize(imgx,typ)
+    ret,thresh = cv2.threshold(img,127,255,0)
+    img = thresh.copy()
+    cvs(1,img,'x')
+    y1 = 45; y2 = y1 + 322;  x1 = 152; x2=200
+#    wtx00 = img[y1:y2,  x1:x2].copy()    
+#    cvs(1,wtx00,'y')
+    y1 = 45; y2 = y1 + 322;  x1 = 240; x2=360
+    wtx01 = img[y1:y2,  x1:x2].copy()    
+#    cvs(1,wtx01,'y')       
+#    pxls =  tMatch(wtx01,typ,db)    # search for a number
+    y1 = 45; y2 = y1 + 322;  x1 = 405; x2=535
+    wtx02 = img[y1:y2,  x1:x2].copy()    
+    cvs(1,wtx02,'yy')       
+ #   pxls =  tMatch(wtx02,typ,db)
+    y1 = 45; y2 = y1 + 322;  x1 = 580; x2=720
+    wtx03 = img[y1:y2,  x1:x2].copy()    
+    cvs(1,wtx03,'yy')       
+    pxls =  tMatch(wtx03,typ,db)  
+    print 'number is',pxls
+    cvd()
+
         
 
       
-        cvs(1,img)
-    cvd()
+    
 

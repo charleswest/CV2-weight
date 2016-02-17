@@ -84,7 +84,7 @@ if __name__ == '__main__':
     imgx = cv2.imread(tst +'Test.png') 
     #imgx = cv2.imread(fn)
     img = stdSize(imgx,tst)   #cv2.resize(imgx, (1040,410))
-    srt = img.copy()
+  #  srt = img.copy()
     h,w = img.shape[:2]  
  
     #cvs(db,img)
