@@ -26,13 +26,6 @@ def tMatch(im1,typ,db):
         else:
              om2  =  cv2.resize(im2, ( w1, h1 )  )    # panel resize
       
-        if db:
-            print 'display im1 the image x'
-            cvs(1,im1,'x')
-            print 'display im2 the panel x'
-            cvs(1,im2,'pp')
-            print ('display om2 the template ')
-            cvs(1,om2,'y')
         w1,  h1  = im1.shape[::-1]   # image
         w2,  h2 =  om2.shape[::-1]   # panel
         if db: print 'om1 w {}, h {}   im2 w {}  h {}'.format(w1, h1,w2, h2)
@@ -41,7 +34,7 @@ def tMatch(im1,typ,db):
         if db:
             print pxlcnt, 'count of pixels'
             cvs(1,res,'z')
-            cvd()
+           
         
         if pxlcnt  > 300 :
             rtn[n] = '1'                 
