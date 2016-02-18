@@ -34,17 +34,22 @@ def tMatch(im1,typ,db):
         if db:
             print pxlcnt, 'count of pixels'
             cvs(1,res,'z')
-           
-        
-        if pxlcnt  > 300 :
-            rtn[n] = '1'                 
-    drtn = ''.join(rtn)
+        PL= {
+                     #         pxl limit   
+                 'wt' : [   300 ],
+                 'fat': [   300 ],
+                 'h2o': [   200 ]       
+            }
+        if pxlcnt  > PL[typ][0] :
+                rtn[n] = '1'                 
+        drtn = ''.join(rtn)
    
-    print 'ptrn ', rtn , drtn
+    
     ''' ptrn translates the results of the pattern analysis into numbers '''
     ptrn = {
            '1110111' :  0,
-           '1100000' :  1,                    
+           '1100000' :  1,   #   leading 1 in weight
+           '0000011' :  1,   #   internal 1 
            '1011101' :  2,                    
            '0011111' :  3,
            '0101011' :  4,
@@ -55,39 +60,23 @@ def tMatch(im1,typ,db):
            '0111111' :  9
            }
     try:
-        n = ptrn[drtn]    
+        n = ptrn[drtn]
+        print 'number {} ptrn {}   '.format(n ,  drtn)
         return(n)
-    except  KeyError:
-        return 'p'
+    except  KeyError:        
+        print 'bad pattern here '  , drtn
+        return 0
     
 if __name__ == '__main__':
     from findBlobs import findBlobs, boundsBlob, stdSize
-    typ = 'wt'
+    typ = 'h2o'
     path = ('C:\\Train\\{}7.png'.format( typ    ) )          #os.getcwd()
     print path        
     files = glob.glob(path)  
     db = 1
-    fwt =  typ + 'Test.png'
-    imgx = cv2.imread(fwt,0)
-    img = stdSize(imgx,typ)
-    ret,thresh = cv2.threshold(img,127,255,0)
-    img = thresh.copy()
-    cvs(1,img,'x')
-    y1 = 45; y2 = y1 + 322;  x1 = 152; x2=200
-#    wtx00 = img[y1:y2,  x1:x2].copy()    
-#    cvs(1,wtx00,'y')
-    y1 = 45; y2 = y1 + 322;  x1 = 240; x2=360
-    wtx01 = img[y1:y2,  x1:x2].copy()    
-#    cvs(1,wtx01,'y')       
-#    pxls =  tMatch(wtx01,typ,db)    # search for a number
-    y1 = 45; y2 = y1 + 322;  x1 = 405; x2=535
-    wtx02 = img[y1:y2,  x1:x2].copy()    
-    cvs(1,wtx02,'yy')       
- #   pxls =  tMatch(wtx02,typ,db)
-    y1 = 45; y2 = y1 + 322;  x1 = 580; x2=720
-    wtx03 = img[y1:y2,  x1:x2].copy()    
-    cvs(1,wtx03,'yy')       
-    pxls =  tMatch(wtx03,typ,db)  
+    fwt =   'digTest.png'                   # usually saved from rdTyp
+    img = cv2.imread(fwt,0)
+    pxls =  tMatch(img,typ,db)  
     print 'number is',pxls
     cvd()
 
