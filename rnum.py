@@ -1,7 +1,8 @@
 import numpy as np
 import cv2
 import sys
-from findBlobs import findBlobs, stdSize
+from findBlobs import findBlobs, stdSize ,boundsBlob
+from TloopMatch import tMatch
 from cwUtils import *
 global db
 ''' Trnum  writes each located digit to a test file for training future
@@ -76,7 +77,8 @@ def hunt(imgx,typ ,db):
     print '>>>>>>>>>>>>>>>>>hunt  ' ,typ, 'failed'
     return (0)                          #  eliminate hunt2 for now
 #    return(hunt2(imgx,typ,hcnt))
-def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):     
+def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
+    
     '''
     analyse the img and pass a likely set of features to qnumb for
     interpretation
@@ -110,8 +112,8 @@ def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
             if cv2.contourArea(f) > rmx: rmx = cv2.contourArea(f)
             xd = x - fz        # xd is horizontal dist between blobs  
             if xd > dx:         #   dx is parm   here is where the number is detected
-                numb.append(qnumb(tgrp))  #,mask,img))    #  process the number
-                tnumb(tgrp,img,mask)      # black rectangle and training output
+                numb.append(qnumb(tgrp,mask))  #,mask,img))    #  process the number
+                tnumb(tgrp,img)      # black rectangle and training output
                 tgrp = []                                 # start a new group 
             if db: print    'ix {} w {} h {} dx {} xd {} area {}'\
                       .format(ix,w,h,dx,xd,cv2.contourArea(f))                               
@@ -119,8 +121,8 @@ def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
 ##            cv2.drawContours( img, [f], 0, (0, 255, 255), 5 ) 
 ##            cvs(db,img)
             fz = x
-        numb.append(qnumb(tgrp))  #,mask,img))      # process the last group
-        tnumb(tgrp,img,mask)
+        numb.append(qnumb(tgrp,mask))  #,mask,img))      # process the last group
+        tnumb(tgrp,img )
         
         print 'last numb', numb
         tpat = numb 
@@ -137,11 +139,11 @@ def rdNumber(img, tval=160, ex=2, ms=1.0,mx=3, dz = 60):
             return([0,0,0,0],rmx,rmn)     #    nfg return True zero
         else:             
             return(tpat,rmx,rmn) # maybe good numeric value
-def tnumb(grp,img,mask):
+def tnumb(grp,img):
     ''' process a possible digit and output a mask to a file '''
     if not len(grp) > 0: return(0)
-    x,y, wg, hg  = evalGrp(grp)
-        
+    x,y, wg, hg  = boundsBlob(grp)
+
     # compute bounds for the possible digit   top left bottom right
     tl = (x-10,y-10) ; br = ( x  +  wg+10, y+ hg+10)       #  10 for more room
     cv2.rectangle(img,(tl),(br),(0,0,0),5)       # black rectangle
@@ -151,40 +153,35 @@ def tnumb(grp,img,mask):
 
     x1= wg/2 +  x; y1=y;   x2=x1; y2=hg+y
     cv2.line(img,(x1,y1),(x2,y2),(0,255,0),2)   # vertical center
-    cvs(db,img)
+    #cvs(db,img)
     zh,zw = img.shape[:2] 
  #    print ' w x h  db ', w , h, db 
-    print 'rectangle tl{} br{}  img w{}  h{}'.format(tl,br, zw, zh)   
-         
-def evalGrp(grp):        # attributes min and max y
-    x,y,w,h = cv2.boundingRect(grp[0])
-    zbx,zby,zbw,zbh = cv2.boundingRect(grp[-1])
-    wg = zbx +zbw  -  x   #    last largest x value - first x
-    miny=y         
-    maxy=y 
-    for b in grp:      #     obtain min and max values for y                    
-        bx,by,bw,bh = cv2.boundingRect(b)
-        if by < miny:  miny = by
-        if by + bh > maxy: maxy = by + bh
-        hg = maxy - miny  #  now the height
-        y =  miny
-    return (x,y,wg,hg)
-def qnumb(grp):      #   what number does this group encode??
+    if db: print 'rectangle tl{} br{}  img w{}  h{}'.format(tl,br, zw, zh)   
+
+def qnumb(grp,mask):      #   what number does this group encode??
     '''
     we count horizontal bars.   The we create an encoding of the four
     possible vertical bars upper left and right lower left and right
     An 8 has three horizontal bars and all four vertical bars for an
     encoding of 3 1 1 1 1.
     '''
+    
     #xd = 999
     global tfile
  #   mask = stdSize(mask,xtyp)  #cv2.resize(img, (1040,410))
     if not len(grp) > 0:
         if db: ( 'zero len group. -- quitting')
         return(0)
+##    x,y, w, h  = boundsBlob(grp)
+##    #w = 110; h = 300                         #  nasty hack w and h 
+##    tmsk = mask[y:y+h , x:x+w].copy()
+##    pxls =  tMatch(tmsk,xtyp,db)    # search for a number
+##    print 'number is',pxls
+##    cvs(db,tmsk,'tmsk')
+##    return(pxls)
     xll =0; xlh=0; xrl=0; xrh = 0    #  pixel counts 
     v=0 ;  h=0;                      #  pixel groups  
-    x, y, wg, hg = evalGrp(grp)
+    x, y, wg, hg = boundsBlob(grp)
     for b in grp:
         bx,by,bw,bh = cv2.boundingRect(b)
         if bh   < 1.1 * bw:
@@ -202,8 +199,8 @@ def qnumb(grp):      #   what number does this group encode??
                 else:
                     xrh = 1                   #                 else high
        
-        if db: print 'p so far is h {} v {} xll {} xlh {} xrl {} xrh {}'\
-                          .format(h,   v,   xll,   xlh,    xrl, xrh)
+        #if db: print( 'p so far is h {} v {} xll {} xlh {} xrl {} xrh {}'
+        #                  .format(h,   v,   xll,   xlh,    xrl, xrh) )
                     
     
 
@@ -215,7 +212,7 @@ def qnumb(grp):      #   what number does this group encode??
            31001: 2,                    
            30011: 3,
            10111: 4,
-           30101: 5,
+           30110: 5,
            31110: 6,
            10011: 7,  #?
            11001: 7,  
@@ -225,12 +222,29 @@ def qnumb(grp):      #   what number does this group encode??
           }
     if p in ptrn:       #  HOO RAY we found a digit                 
         if db: print '>>>>>>found a {}  {}   '.format( ptrn[p] , p)
-        
+        writeNumb(ptrn[p],grp,mask)      #      keep the mask image for future use
         return ptrn[p]
     else:                  #  we don't seem to have a number
-        if db: print   '<<<<<<<qptrn - pattern problem p is >{}<'.format( p)       
-        return 'p'
-
+        print   '<<<<<<<qptrn - pattern problem p is >{}<'.format( p)
+        #return('p')
+        x,y, w, h  = boundsBlob(grp)
+        w = 110; h = 300                         #  nasty hack w and h 
+        tmsk = mask[y:y+h , x:x+w].copy()
+        pxls =  tMatch(tmsk,xtyp,db)    # search for a number
+        print 'number is',pxls
+        cvs(db,tmsk,'tmsk')
+        return(pxls)
+def writeNumb(n,grp,mask):
+    return()
+       
+    x,y, w, h  = boundsBlob(grp)
+    tmplate = mask[y:y+h , x:x+w].copy()
+    
+    fil = 'C:\\Train\\{}{}.png'.format(xtyp,n)
+    print 'writeNumb n {} to file {}'.format(n,fil)
+    cv2.imwrite(fil,tmplate)
+    cvs(db,tmplate,fil)
+    
 import time
  
 

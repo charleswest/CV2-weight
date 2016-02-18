@@ -5,7 +5,8 @@ import cv2
 global db
 from cwUtils import cvs, cvd, erode 
 from sworks import Cropx, Part
-from rnum import iHunt,  hunt   
+from rnum import iHunt,  hunt
+from rdTyp import rdTyp
 
 class Scale:
     global tmpf 
@@ -25,15 +26,15 @@ class Scale:
         cv2.imwrite("wtTest.png",  self.wt)
         #  hunt for the appropriate number in each partitioned image
         if db: cvs(db,self.wt,'weight',0)  
-        self.nwt =  hunt(self.wt,'wt',db)            
-        self.nfat = hunt(self.fat,'fat',db)            
-        self.nh2o = hunt(self.h2o,'h2o',db)
+        self.nwt =  rdTyp(self.wt,'wt',db)            
+        self.nfat = rdTyp(self.fat,'fat',db)            
+        self.nh2o = rdTyp(self.h2o,'h2o',db)
       
         return(None)
     
 if  __name__ == '__main__':
     global db,tmpf
-    db = True
+    db = False
     
     filename = r"C:\Users\charles\Desktop\ScTest\T2015Doris\20150208_084551.jpg"
     filename = "input.png"

@@ -23,7 +23,7 @@ def  boundsBlob(grp):
 #     [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
     x,y = grp[0][0][0]
     mxy = y
-    print x,y
+    #print x,y
     for  cn in grp:
         for blb in cn:
                 #print y,
@@ -57,14 +57,14 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
     rvl = []
     for con in scon:
        area = cv2.contourArea(con)
-       if db: print  area,
+       #if db: print  area,
        
        cnt_len = cv2.arcLength(con, True)                          
        cntp = cv2.approxPolyDP(con, 0.02*cnt_len, True)
  #      print len(cntp)  #    look for suitable contours
        x,y,w,h = cv2.boundingRect(con)
        asp = abs(  w - h  )
-       if db: print 'abs|w-h| {}  w {} h {} '.format(asp,w,h)
+       #if db: print 'abs|w-h| {}  w {} h {} '.format(asp,w,h)
        if (  len(cntp) > 3                   # at least 4  
              and  asp > .1                      # ie not round or square
              and  area > ms
@@ -75,16 +75,16 @@ def  findBlobs(imx,ms,mx,erd,db,tval=127):
        else:
           cv2.drawContours(imx,[con], 0, (0,0,255), 2)       #  red
           
-       if db:cvs(db,imx,t=0)
+      #  if db:cvs(db,imx,t=0)
     return (rvl,cmask)
    
 if __name__ == '__main__':
     db = False
-    tst = 'fat'
+    tst = 'wt'
     imgx = cv2.imread(tst +'Test.png') 
     #imgx = cv2.imread(fn)
     img = stdSize(imgx,tst)   #cv2.resize(imgx, (1040,410))
-    srt = img.copy()
+  #  srt = img.copy()
     h,w = img.shape[:2]  
  
     #cvs(db,img)
