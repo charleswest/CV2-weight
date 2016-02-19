@@ -4,7 +4,7 @@ from cwUtils import cvd,cvs
 import time, os, glob, timeit
 from datetime import datetime
 from findBlobs import findBlobs, boundsBlob, stdSize
-from TloopMatch import tMatch
+from tMatch import tMatch
 def rdWeight(imgx,typ,db):
     img = stdSize(imgx,typ)
     imgray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)

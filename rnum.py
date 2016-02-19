@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import sys
 from findBlobs import findBlobs, stdSize ,boundsBlob
-from TloopMatch import tMatch
+from tMatch import tMatch
 from cwUtils import *
 global db
 ''' Trnum  writes each located digit to a test file for training future
