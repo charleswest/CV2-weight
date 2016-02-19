@@ -4,20 +4,28 @@ from cwUtils import cvd,cvs
 import time, os, glob, timeit
 from datetime import datetime
 from findBlobs import findBlobs, boundsBlob, stdSize
-from TloopMatch import tMatch
+from tMatch import tMatch
 
 def rdTyp(imgx,typ,db):
     '''rdTyp finds the screen area of a digit based on the x y co-ordinates
         in the tables below.   It passes this area to tMatch which returns
         a number  '''
     img = stdSize(imgx,typ)
-    imgray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    ret,thresh = cv2.threshold(imgray,127,255,0)
+    d = 150
+    #cvs(1,imgx,'rdTyp input')
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # define range of blue color in HSV
+    h = 46; s = 20; v = 212
+    lower_blue = np.array([h,s,v])   #np.array([110,50,50])
+    upper_blue = np.array( [h+d,s+d,v+d])   #np.array([130,255,255])
+    # Threshold the HSV image to get only blue colors
+    thresh = cv2.inRange(hsv, lower_blue, upper_blue)
+
     img = thresh.copy()
     Y= {
                  #      y1  y2    j limit        
              'wt' : [   45, 367 , 4 ],
-             'fat': [   84, 344 , 3  ],
+             'fat': [   84, 344 , 3 ],
              'h2o': [   35, 230 , 3 ]
                     
             }
@@ -43,9 +51,6 @@ def rdTyp(imgx,typ,db):
     
     for j, xin in  enumerate(n):
         nn = nn + xin * 10**(j-1)
-#       if (nn > lim) and nn < limh:
-#        iHunt.append((typ, hcnt, iex, tx, ms,rms, mx,rmx,  nn ))
-#        print 'hunt rtn' ,nn
         cvs(db,img,typ)
     return(nn)                   # the decoded number
          

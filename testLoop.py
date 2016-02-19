@@ -18,8 +18,8 @@ global db
 db = False
 tfile = r'C:\Users\charles\Desktop\ScTest\Qtest.txt'
 tfile = r'C:\Users\charles\Desktop\ScTest\wtDataTst.txt'
-tfile = r'C:\Users\charles\Desktop\ScTest\Tdec30G1.txt'   #  large scTest no on Github
-tfile = 'ScTest\\T2015Doris.txt'      #    should work on Git Hub with limited ScTest
+#tfile = r'C:\Users\charles\Desktop\ScTest\Tdec30G1.txt'   #  large scTest no on Github
+#tfile = 'ScTest\\T2015Doris.txt'      #    should work on Git Hub with limited ScTest
 #      only one tfile will run 
 try:
     trb = open(tfile.replace('txt','TRB.txt'),'w')
@@ -86,12 +86,12 @@ for i in range(0,3):
      t[i] = c[i] + f[i] 
      print  ( ('wt ','fat','h20')[i] , c[i], ' ok of ' ,
                t[i], f[i],'wrong' , round( 100*c[i]/t[i],2), '%'  )
-print 'blob dict'
-
-iHunt = sorted(iHunt, key=lambda b: (b[0], b[1]))
-print 'sorted'
-ti = 0
-for i in iHunt:
-   print 'type hcnt tx  ex nn' , i
-   if i[0] <> 'xcrop':  ti = ti + i[1]      # accumulate ihunt depth
-print 'Average Depth of search' , 1.0 * ti / len(iHunt)
+##print 'blob dict'
+##
+##iHunt = sorted(iHunt, key=lambda b: (b[0], b[1]))
+##print 'sorted'
+##ti = 0
+##for i in iHunt:
+##   print 'type hcnt tx  ex nn' , i
+##   if i[0] <> 'xcrop':  ti = ti + i[1]      # accumulate ihunt depth
+##print 'Average Depth of search' , 1.0 * ti / len(iHunt)
