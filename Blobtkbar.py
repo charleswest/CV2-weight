@@ -14,8 +14,8 @@ cv2.namedWindow('image')
 
 
 # create trackbars for color change
-cv2.createTrackbar('min','image',0,1500,nothing)
-cv2.createTrackbar('max','image',0,10000,nothing)
+cv2.createTrackbar('min','image',0,100,nothing)
+cv2.createTrackbar('max','image',0,1000,nothing)
 cv2.createTrackbar('tval','image',0,255,nothing)
 cv2.createTrackbar('erd','image',0,20,nothing)
 while(1):
@@ -28,7 +28,7 @@ while(1):
         fil = "img3c.png"
         fil = 'fatTest.png'
         db = False
-        img = cv2.imread(fil)
+        img  = cv2.imread(fil)
         blobs = findBlobs(img,ms,mx,erd,db,tval)      # 500 3000 2 160
         if blobs is not None :
             print '{} blobs found  '.format(len(blobs))

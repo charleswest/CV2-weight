@@ -7,6 +7,7 @@ from cwUtils import cvs, cvd , erode, dilate
 
 db = True
 def stdSize(imgx,typ):
+    global db
     h,w = imgx.shape[:2]   #   h = rows,  w = cols
     if typ == 'wt':
         nw = 800
@@ -14,7 +15,7 @@ def stdSize(imgx,typ):
         nw = 400
    
     nh =   h * (float(nw) / float(w))  
-    print 'stdSize height {} typ {} nw {}'.format( nh, typ, nw)
+    #print 'stdSize height {} typ {} nw {}'.format( nh, typ, nw)
     imgy =  cv2.resize(imgx, ( nw, int (nh) )  )    # maintain aspect ratio
     
     return imgy.copy()

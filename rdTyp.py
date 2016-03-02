@@ -51,11 +51,11 @@ def rdTyp(imgx,typ,db):
     
     for j, xin in  enumerate(n):
         nn = nn + xin * 10**(j-1)
-        cvs(db,img,typ)
+    cvs(db,img,typ,5000)
     return(nn)                   # the decoded number
          
 if __name__ == '__main__':
-    db =  1
+    db =  0
     typ = 'h2o'
     fwt =  typ + 'Test.png'
     imgx = cv2.imread(fwt )

@@ -29,7 +29,7 @@ class Scale:
         self.nwt =  rdTyp(self.wt,'wt',db)            
         self.nfat = rdTyp(self.fat,'fat',db)            
         self.nh2o = rdTyp(self.h2o,'h2o',db)
-      
+        #cvs(db,self.cropped,'input',0)
         return(None)
     
 if  __name__ == '__main__':

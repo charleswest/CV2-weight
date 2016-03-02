@@ -7,7 +7,7 @@ from datetime import datetime
 print __doc__
 def tMatch(im1,typ,db):
     
-    cvs(db,im1)
+    if db: cvs(db,im1)
     path = ('C:\\Train\\pxl\\{}P*.png'.format( typ    ) )          #os.getcwd()
     #print path        
     files = glob.glob(path)  
@@ -33,7 +33,7 @@ def tMatch(im1,typ,db):
         pxlcnt = np.sum(res) / 255    # count of pixels 
         if db:
             print pxlcnt, 'count of pixels'
-            cvs(1,res,'z')
+            cvs(db,res,'z')
         PL= {
                      #         pxl limit   
                  'wt' : [   300 ],
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     path = ('C:\\Train\\{}7.png'.format( typ    ) )          #os.getcwd()
     print path        
     files = glob.glob(path)  
-    db = 1
+    db = 0
     fwt =   'digTest.png'                   # usually saved from rdTyp
     img = cv2.imread(fwt,0)
     pxls =  tMatch(img,typ,db)  
