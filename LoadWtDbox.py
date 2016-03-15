@@ -44,7 +44,7 @@ while (rawchar == 'c'):
                            # sx is a tuple of w, fat, water
         print 'Date and Time' , t, 'weight', sx.nwt
     #   note the raw string below 
-        f  = open( r'C:\Users\charles\Desktop\wtdata\0aaScale.r', 'a')
+        f  = open( r'C:\Users\charles\data\prod\wtdata\0aaScale.r', 'a')
         
         print 'updd( {}, {},  {}, {} )'.format(t,sx.nwt,sx.nfat,sx.nh2o)
         st = str(t)
