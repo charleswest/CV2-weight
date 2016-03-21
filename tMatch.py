@@ -8,7 +8,7 @@ print __doc__
 def tMatch(im1,typ,db):
     
     if db: cvs(db,im1)
-    path = ('C:\\Train\\pxl\\{}P*.png'.format( typ    ) )          #os.getcwd()
+    path = ('/Train/pxl/{}P*.png'.format( typ    ) )          #os.getcwd()
     #print path        
     files = glob.glob(path)  
     rtn = ['0','0','0','0','0','0','0']

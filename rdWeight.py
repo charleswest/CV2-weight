@@ -33,7 +33,7 @@ def rdWeight(imgx,typ,db):
 if __name__ == '__main__':
     from findBlobs import findBlobs, boundsBlob, stdSize
     typ = 'wt'
-    path = ('C:\\Train\\{}7.png'.format( typ    ) )          #os.getcwd()
+    path = ('/Train/{}7.png'.format( typ    ) )          #os.getcwd()
     print path        
     files = glob.glob(path)  
     db = 0
