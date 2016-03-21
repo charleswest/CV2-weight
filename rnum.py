@@ -240,7 +240,7 @@ def writeNumb(n,grp,mask):
     x,y, w, h  = boundsBlob(grp)
     tmplate = mask[y:y+h , x:x+w].copy()
     
-    fil = 'C:\\Train\\{}{}.png'.format(xtyp,n)
+    fil = '/Train/{}{}.png'.format(xtyp,n)
     print 'writeNumb n {} to file {}'.format(n,fil)
     cv2.imwrite(fil,tmplate)
     cvs(db,tmplate,fil)
