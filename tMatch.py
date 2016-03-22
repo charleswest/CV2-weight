@@ -8,11 +8,11 @@ print __doc__
 def tMatch(im1,typ,db):
     
     if db: cvs(db,im1)
-    path = ('/Train/pxl/{}P*.png'.format( typ    ) )          #os.getcwd()
+    path = ('Train/pxl/{}P*.png'.format( typ    ) )          #os.getcwd()
     #print path        
     files = glob.glob(path)  
     rtn = ['0','0','0','0','0','0','0']
-    for n,f in enumerate(files):                # read templates from Train
+    for n,f in enumerate(sorted(files)):                # read templates from Train
         if db: print 'Tmatch', f[9:-4],        
         im2 = cv2.imread(f,0)
         
@@ -70,10 +70,10 @@ def tMatch(im1,typ,db):
 if __name__ == '__main__':
     from findBlobs import findBlobs, boundsBlob, stdSize
     typ = 'h2o'
-    path = ('C:\\Train\\{}7.png'.format( typ    ) )          #os.getcwd()
+    path = ('Train/{}7.png'.format( typ    ) )          #os.getcwd()
     print path        
     files = glob.glob(path)  
-    db = 0
+    db = 1
     fwt =   'digTest.png'                   # usually saved from rdTyp
     img = cv2.imread(fwt,0)
     pxls =  tMatch(img,typ,db)  
