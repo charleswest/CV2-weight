@@ -11,7 +11,8 @@ from cwUtils import *
 import numpy as np
 import cv2
 import warnings
-from  weight import Scale,   iHunt 
+from  weight import Scale,   iHunt
+from DigitStat1 import xrdTyp,idGen 
  
 import  os, glob
 global db
@@ -37,6 +38,9 @@ def srtkey(lin):
     #print f[fds:]
     return(f[fds:])
 
+gen = open('0idGRule.py','w')     ##  open file for write
+idGen(1,gen)    # open file
+
 with open(tfile,'r' ) as fr:
      
   for line in fr:
@@ -51,22 +55,23 @@ with open(tfile,'r' ) as fr:
       trueWt = data[0]         #   see key above
       prob = False
       #rd  = rScale(wfile,False )
-      s = Scale(wfile,db)
+      s = Scale(wfile,db,gen)
         
       #for i in range(0,3):
-##      if data[1] <> s.nfat: raise ValueError('fat failed')
-##      if data[2] <> s.nh2o: raise ValueError('h2o failed')
       for i,rd in enumerate ([s.nwt, s.nfat, s.nh2o]):
          if rd == data[i]:
             print (rd ,  '  is correct')
             correct = correct + 1
             c[i] = c[i] + 1
-         else:
+         else:  
             failed = failed + 1
             f[i]   = f[i] + 1
             print '>>>>>>>>>>>>' ,rd, 'not equal to', data[i]
             prob = True
       total = correct + failed
+##      if data[0] <> s.nwt: raise ValueError('wt failed')
+##      if data[1] <> s.nfat: raise ValueError('fat failed')
+##      if data[2] <> s.nh2o: raise ValueError('h2o failed')
       if prob: trb.write(line)
       print ('                                     ', correct ,'right out of ', total)
       pOK = correct * 100.0 / total
@@ -78,7 +83,9 @@ with open(tfile,'r' ) as fr:
       ex = lxtime - stime; av = ex / total
       print 'el time avg',  str(ex)[2:10] , str(av)[2:10],('    pct OK is', round(pOK,2))
       print "================ end Testloop   ===================="
-trb.close()     
+trb.close()
+idGen(0,gen)
+gen.close()
 cvd()
 print ('****************************************************************')
 t = [0,0,0]

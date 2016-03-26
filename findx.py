@@ -3,7 +3,7 @@ import numpy as np
 from cwUtils import *
 
 img = cv2.imread('input.png',1)
-cvs(img)
+cvs(1,img)
 
 # Take each frame
 frame = img
@@ -22,8 +22,8 @@ mask = cv2.inRange(hsv, lower_blue, upper_blue)
 res = cv2.bitwise_and(frame,frame, mask= mask)
 
  
-cvs(mask,'mask')
-cvs(res,'res')
+cvs(1,mask,'mask')
+cvs(1,res,'res')
 
 cvd() 
    
