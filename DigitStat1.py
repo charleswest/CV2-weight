@@ -35,7 +35,7 @@ def xrdTyp(img,typ,db,trb):
     XX = {
            #        100          10           one      tenth   
          'wt' : [(95, 145) , (165,265) , (280,385  ),  (400,510)  ],             
-         'fat': [(10, 55 ) , (65,125) , (135,200),  (0,0)  ],
+         'fat': [(15, 50 ) , (65,125) , (140,200),  (0,0)  ],
          'h2o': [(5, 55) ,   (65,120 ) , (135,185),  (0,0)  ]
             }
     n = []
@@ -97,7 +97,7 @@ def identifyN(p,trb,lb=0,db=0,typ='x'):
  
     d = imwk.copy()         #  middle vert third
     d[ :,  :2*w/5  ] = 0        #    - left 1/3
-    d[ :, 3*w/5:  ] = 0       #    - right 1/3
+    d[ :, 3*w/6:  ] = 0       #    - right 1/3
     Mv3 = np.sum(d)/255
     #cvs(db,d,'digit  v Mid 5th' )
     im2 = d.copy(); imt2 = 'Middle 5th'
@@ -172,7 +172,7 @@ if  __name__ == '__main__':
     trb = open('0idGRule.py','w')     ##  open file fo r write
     idGen(1,trb)    # open file
     
-    for typ in ['h2o','wt' , 'fat']:        
+    for typ in ['fat']:#,'wt' , 'fat']:        
         fwt =  typ + 'Test.png'
         imgx = cv2.imread(fwt )
         print xrdTyp(imgx,typ,db,trb )
