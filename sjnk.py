@@ -1,24 +1,32 @@
- 
+
 unsort = open('idGRule.py','r')
 
 rl = unsort.readlines()
+for x in rl:
+    x = x.strip()
 ly  = [x for x in rl  if len(x) > 20]
-xkey = lambda instr: str(instr[15:18] + instr[-3:-1])
-for xx in ly:
-    print xkey(xx)
+xkey = lambda instr: '{}{}'.format(instr[15:18] , instr[-3:-1] ) 
+#for xx in ly:
+   # print xkey(xx)
 
-lines = sorted(ly   , key = lambda instr: (instr[15:18] + instr[-3:-1]) )
+lines = sorted(ly   , key = (lambda instr: '{}{}{}'.format(instr[15:18]
+                                                       , instr[-3:-1].strip()
+                                                       ,  instr[19:-1]  ))
 
-pl = ' ' ; c = 0
+                             )
+
+pl = ' ' ; c = 0; d = 0
 for l in lines:
     
     if l != pl:
         print l,
-        pl = l
+        
         c += 1
-##    else:
-##        print 'dup',l
-
+    else:
+ #       print 'dup',l
+        d += 1
+        
+    pl = l
  
 
-print c, 'lines printed'
+print  'lines printed {} dup {}'.format(c,d)

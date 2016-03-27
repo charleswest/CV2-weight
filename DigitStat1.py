@@ -4,12 +4,7 @@ import cv2
 from cwUtils import cvd, cvs, erode, dilate
 from idGRule import idRule
 import itertools as it
-
-##class descriptor():
-##    lstN = 12
-##    head =   '''  lb, n  t0,  L,  R,  T  ,B  S   LR  TB, M3 Mv3 '''
-##    ahd  =   '''  lb n t0  L R  T  B  S  LR TB M3 Mv3 '''
-
+from matplotlib import pyplot as plt
 
 def xrdTyp(img,typ,db,trb):
     '''rdTyp finds the screen area of a digit based on the x y co-ordinates
@@ -55,10 +50,11 @@ def xrdTyp(img,typ,db,trb):
         cv2.imwrite('digTest.png',digit)   # save for future debug
         h,w = digit.shape
         #print 'xid input w {} h {}'.format(w,h)
-        cvs(db,digit,'input digit')
+        #cvs(db,digit,'input digit')
+       
   #      n.append( tMatch(digit,typ,db))    # interpret as a number
         if db: print 'n is ', n
-        n.append(identifyN(digit,trb,0,0,typ) )              # train and test
+        n.append(identifyN(digit,trb,0,db,typ) )              # train and test
         
     if db: print '       rdTyp n ',  n     #  exit here
     nn = 0; j = -1
@@ -80,56 +76,55 @@ def identifyN(p,trb,lb=0,db=0,typ='x'):
     masks applied to the digit being examined.  Masks are applied by setting the non mask
     area of the image to zero, black.   Other statistics collected are not used but could
     be input to some future machine learning algorithm'''
+    im0 = p.copy(); imt0 = 'input digit'
     d = np.zeros_like(p)
     dx = d.copy()                       # nothing to see here
     d = p.copy()
     h,w = d.shape
     #print 'id input w {} h {}'.format(w,h)
-    im2 = d.copy()
-    t0 = np.sum(im2) / 255
+    imwk = p.copy()
+    t0 = np.sum(imwk) / 255
     #cvs(db,d,'digit  ' )
-    db=0
+   
     msk = []              #   initialize mask
-    d = im2.copy()  
+    d = imwk.copy()  
     d[:, w/3:] = 0        #    left 1/3    same as bitwise and
     L = np.sum(d)/255     #
-    cvs(db,d,'digit Left ' )
+    #cvs(db,d,'digit Left ' )
+    im1 = d.copy(); imt1 = 'digit Left'
    
     msk = pxCount(d,msk)
  
-    d = im2.copy()         #  middle vert third
+    d = imwk.copy()         #  middle vert third
     d[ :,  :2*w/5  ] = 0        #    - left 1/3
     d[ :, 3*w/5:  ] = 0       #    - right 1/3
     Mv3 = np.sum(d)/255
-    cvs(db,d,'digit  v Mid 5th' )
+    #cvs(db,d,'digit  v Mid 5th' )
+    im2 = d.copy(); imt2 = 'Middle 5th'
     msk =   pxCount(d ,msk )    #  
  #   if typ == 'wt': msk[1] = 9
     
-    d = im2.copy()
+    d = imwk.copy()
     d[:, :2*w/3] = 0
     R = np.sum(d)/255        # right 1/3
-    cvs(db,d,'digit Right ' )
+    #cvs(db,d,'digit Right ' )
+    im3 = d.copy(); imt3 = 'digit Right'
     msk = pxCount(d,msk)
 
-    d = im2.copy()         #  upper 2nd Q
+    d = imwk.copy()         #  upper 2nd Q
     d[ :1*h/5, : ] = 0        #    - upper 2/5
     d[ 2*h/6:, : ] = 0        #    - lower   
     T = np.sum(d)/255
-    cvs(db,d,'digit T Q ' )
+    #cvs(db,d,'digit T Q ' )
+    im4 = d.copy(); imt4 = 'Top quarter'
     msk = pxCount(d,msk)
 
-##    d = im2.copy()         #  middle horiz third
-##    d[   :h/3, : ] = 0        #    - upper 1/3
-##    d[ 2*h/3:, : ] = 0        #    - lower 1/3
-##    M3 = np.sum(d)/255
-##    cvs(db,d,' Mid 1/3' )
-##    msk = pxCount(d,msk)
-
-    d = im2.copy()           #  lower 1/4
+    d = imwk.copy()           #  lower 1/4
     d[ :3*h/5, : ] = 0        #    - upper 2/5
     d[ 4*h/5:, : ] = 0      
     B = np.sum(d)/255
-    cvs(db,d,'digit Bottom  Q' )
+    #cvs(db,d,'digit Bottom  Q' )
+    im5 = d.copy(); imt5 = 'Bottom quarter'
 
 
     msk.insert(0,typ )    
@@ -137,11 +132,22 @@ def identifyN(p,trb,lb=0,db=0,typ='x'):
     
 
     trb.write( '\telif mm ==  {}: n = {} \n'.format( mm  , lb ) )
-    print 'digit mask  {}'.format(mm)
+    print 'digit mask  elif mm ==  {}: n = {}'.format(mm, lb)
 
     n = idRule(  mm)
     d = d - d
+    titles = [imt1,imt2,imt3,imt4,imt5,imt0]
+    images = [im1, im2, im3, im4, im5, im0]
+    if db : Show(titles,images)
     return n
+
+def Show(titles,images):
+    for i in xrange(6):
+        plt.subplot(2,3,i+1),plt.imshow(images[i],'gray')
+        plt.title(titles[i])
+        plt.xticks([]),plt.yticks([]) 
+    plt.show()
+   
 def idGen(s,trb):
     if s == True:
         
@@ -166,7 +172,7 @@ if  __name__ == '__main__':
     trb = open('0idGRule.py','w')     ##  open file fo r write
     idGen(1,trb)    # open file
     
-    for typ in ['h2o']:#,'wt' , 'fat']:        
+    for typ in ['h2o','wt' , 'fat']:        
         fwt =  typ + 'Test.png'
         imgx = cv2.imread(fwt )
         print xrdTyp(imgx,typ,db,trb )
